@@ -7,7 +7,8 @@ Repositorio con miniaplicaciones construidas en Python y Flet. Sirve como portaf
 ## Contenido
 
 - `binary_addition/`: demo simple para sumar dos números binarios desde una interfaz Flet.
-- `sudoku/`: demo simple de un sudoku 3 x3 con GUI Flet.
+- `sudoku/` : demo simple de un sudoku 3x3 con GUI Flet.
+- `finanzas/` : demo simple de seguidor de gastos GUI Flet + persistencia local.
 
 ## Instalación
 
@@ -26,5 +27,6 @@ Cada proyecto puede ejecutarse de forma independiente:
 ```bash
 python3 -m binary_addition.main
 python3 -m sudoku.main
+python3 -m finanzas.app
 ```
 
