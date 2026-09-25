@@ -6,7 +6,7 @@ Repositorio con miniaplicaciones construidas en Python y Flet. Sirve como portaf
 
 ## Contenido
 
-- `suma_binaria/`: demo simple para sumar dos números binarios desde una interfaz Flet.
+- `binary_addition/`: demo simple para sumar dos números binarios desde una interfaz Flet.
 
 ## Instalación
 
@@ -23,6 +23,6 @@ python -m pip install -r requirements.txt
 Cada proyecto puede ejecutarse de forma independiente:
 
 ```bash
-python -m sudoku.main
+python3 -m binary_addition.main
 ```
 
