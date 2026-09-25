@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import sqlite3
 import flet as ft
-from .modelo import CATEGORIAS, Repositorio, moneda, resumir
+from .modelo import CATEGORIAS, TIPOS, Repositorio, moneda, resumir
 
 
 def main(page: ft.Page):
@@ -23,14 +23,15 @@ def main(page: ft.Page):
     importe = ft.TextField(label="Importe (MXN)", hint_text="Ej. 120.50", helper="Sin separador de miles; máximo dos decimales")
     fecha = ft.TextField(label="Fecha (AAAA-MM-DD)", value=date.today().isoformat())
     categoria = ft.Dropdown(label="Categoría", value="Comida", options=[ft.DropdownOption(key=c, text=c) for c in CATEGORIAS])
+    tipo = ft.Dropdown(label = "Tipo", value = "Gasto", options=[ft.DropdownOption(key=c, text=c) for c in TIPOS])
     filtro = ft.Dropdown(label="Filtrar categoría", value="Todas", options=[ft.DropdownOption(key=c, text=c) for c in ("Todas", *CATEGORIAS)])
     mes = ft.TextField(label="Mes (AAAA-MM), vacío = todos", hint_text="2026-09")
-    estado = ft.Text("Registra tu primer gasto. Todos los importes se expresan en MXN.")
+    estado = ft.Text("Registra tu primer movieminto. Todos los importes se expresan en MXN.")
     resumen = ft.ResponsiveRow()
     barras = ft.Column(spacing=14)
     alcance = ft.Text()
-    tabla = ft.DataTable(columns=[ft.DataColumn(ft.Text(t)) for t in ("Fecha", "Concepto", "Categoría", "MXN", "Acción")])
-    vacio = ft.Text("No hay gastos para estos filtros.")
+    tabla = ft.DataTable(columns=[ft.DataColumn(ft.Text(t)) for t in ("Fecha", "Concepto", "Categoría", "Tipo", "MXN", "Acción")])
+    vacio = ft.Text("No hay movimientos para estos filtros.")
     categoria_activa, mes_activo = "Todas", ""
 
     def tarjeta(titulo, valor):
@@ -43,8 +44,8 @@ def main(page: ft.Page):
         alcance.value = f"Resultados: {categoria_activa} · {mes_activo or 'todos los meses'}"
         resumen.controls = [tarjeta("Total del filtro · MXN", moneda(datos["total"])), tarjeta("Movimientos del filtro", datos["cantidad"])]
         tabla.rows = [ft.DataRow(cells=[ft.DataCell(ft.Text(g.fecha)), ft.DataCell(ft.Text(g.concepto)),
-            ft.DataCell(ft.Text(g.categoria)), ft.DataCell(ft.Text(moneda(g.centavos))),
-            ft.DataCell(ft.IconButton(ft.Icons.DELETE_OUTLINE, tooltip="Eliminar gasto", on_click=lambda e, gasto=g: confirmar_borrado(gasto)))]) for g in gastos]
+            ft.DataCell(ft.Text(g.categoria)),ft.DataCell(ft.Text(g.tipo)), ft.DataCell(ft.Text(moneda(g.centavos))),
+            ft.DataCell(ft.IconButton(ft.Icons.DELETE_OUTLINE, tooltip="Eliminar movimiento", on_click=lambda e, gasto=g: confirmar_borrado(gasto)))]) for g in gastos]
         vacio.visible = not bool(gastos)
         tabla.visible = bool(gastos)
         barras.controls = [ft.Column([ft.Text(f"{cat} · {moneda(valor)} · {valor/datos['total']:.1%}"),
@@ -72,10 +73,10 @@ def main(page: ft.Page):
 
     def guardar(e):
         try:
-            repo.agregar(fecha.value or "", concepto.value or "", categoria.value, importe.value or "")
+            repo.agregar(fecha.value or "", concepto.value or "", categoria.value, tipo.value, importe.value or "")
             concepto.value = ""
             importe.value = ""
-            estado.value = "Gasto guardado. Si no aparece, revisa los filtros activos."
+            estado.value = "Movimiento guardado. Si no aparece, revisa los filtros activos."
             actualizar()
         except (ValueError, sqlite3.Error) as error:
             estado.value = f"No se guardó: {error}"
@@ -86,12 +87,12 @@ def main(page: ft.Page):
             page.pop_dialog()
             try:
                 repo.eliminar(gasto.id)
-                estado.value = "Gasto eliminado"
+                estado.value = "Movimiento eliminado"
                 actualizar()
             except (ValueError, sqlite3.Error) as error:
                 estado.value = f"No se eliminó: {error}"
                 page.update()
-        page.show_dialog(ft.AlertDialog(modal=True, title=ft.Text("¿Eliminar este gasto?"),
+        page.show_dialog(ft.AlertDialog(modal=True, title=ft.Text("¿Eliminar este movimiento?"),
             content=ft.Text(f"{gasto.concepto} · {moneda(gasto.centavos)}"),
             actions=[ft.TextButton("Cancelar", on_click=lambda e: page.pop_dialog()), ft.TextButton("Eliminar", on_click=borrar)]))
 
@@ -100,7 +101,7 @@ def main(page: ft.Page):
     page.add(ft.Row([ft.Icon(ft.Icons.ACCOUNT_BALANCE_WALLET, size=32), ft.Text("Balance", size=36, weight=ft.FontWeight.BOLD)], wrap=True),
         ft.Text("Comprende tus gastos · demostración local · MXN"),
         ft.Card(content=ft.Container(padding=20, content=ft.Column([ft.Text("Nuevo movimiento", size=22),
-            ft.ResponsiveRow([concepto, importe, fecha, categoria]), ft.Button("Registrar gasto", icon=ft.Icons.ADD, on_click=guardar)]))),
+            ft.ResponsiveRow([concepto, importe, fecha, categoria, tipo]), ft.Button("Registrar movimiento", icon=ft.Icons.ADD, on_click=guardar)]))),
         estado, ft.Divider(), filtro, mes, ft.Button("Aplicar filtros", on_click=aplicar), alcance, resumen,
         ft.Text("Distribución del total filtrado", size=24), barras,
         ft.Text("Movimientos", size=24), vacio, ft.Row([tabla], scroll=ft.ScrollMode.AUTO),

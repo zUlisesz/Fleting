@@ -7,7 +7,8 @@ from pathlib import Path
 import re
 import sqlite3
 
-CATEGORIAS = ("Comida", "Transporte", "Estudio", "Hogar", "Ocio", "Otros")
+CATEGORIAS = ("Comida", "Transporte", "Estudio", "Hogar", "Ocio", "Ahorro", "Trabajo", "Otros")
+TIPOS = ("Gasto", "Ingreso")
 
 
 def a_centavos(texto: str) -> int:
@@ -28,15 +29,15 @@ def moneda(centavos: int) -> str:
 
 
 @dataclass(frozen=True)
-class Gasto:
+class Movimiento:
     id: int
     fecha: str
     concepto: str
     categoria: str
+    tipo: str
     centavos: int
 
-
-def resumir(gastos: list[Gasto]) -> dict:
+def resumir(gastos: list[Movimiento]) -> dict:
     categorias = {}
     for gasto in gastos:
         categorias[gasto.categoria] = categorias.get(gasto.categoria, 0) + gasto.centavos
@@ -48,9 +49,9 @@ class Repositorio:
         self.ruta = Path(ruta)
         self.ruta.parent.mkdir(parents=True, exist_ok=True)
         with self.conexion() as con:
-            con.execute("""CREATE TABLE IF NOT EXISTS gastos (
+            con.execute("""CREATE TABLE IF NOT EXISTS movimientos (
                 id INTEGER PRIMARY KEY, fecha TEXT NOT NULL, concepto TEXT NOT NULL,
-                categoria TEXT NOT NULL, centavos INTEGER NOT NULL CHECK(centavos > 0))""")
+                categoria TEXT NOT NULL, tipo TEXT NOT NULL, centavos INTEGER NOT NULL CHECK(centavos > 0))""")
 
     @contextmanager
     def conexion(self):
@@ -61,7 +62,7 @@ class Repositorio:
         finally:
             con.close()
 
-    def agregar(self, fecha: str, concepto: str, categoria: str, importe: str):
+    def agregar(self, fecha: str, concepto: str, categoria: str, tipo: str,  importe: str):
         try:
             fecha_normal = date.fromisoformat(fecha).isoformat()
         except (ValueError, TypeError) as error:
@@ -73,11 +74,13 @@ class Repositorio:
             raise ValueError("El concepto debe tener entre 1 y 80 caracteres.")
         if categoria not in CATEGORIAS:
             raise ValueError("Selecciona una categoría válida.")
+        if tipo not in TIPOS:
+            raise ValueError("Selecciona un tipo de movimiento válido.")
         centavos = a_centavos(importe)
         with self.conexion() as con:
-            return con.execute("INSERT INTO gastos(fecha,concepto,categoria,centavos) VALUES (?,?,?,?)", (fecha, concepto, categoria, centavos)).lastrowid
+            return con.execute("INSERT INTO movimientos(fecha,concepto,categoria,tipo,centavos) VALUES (?,?,?,?,?)", (fecha, concepto, categoria,tipo ,centavos)).lastrowid
 
-    def listar(self, categoria="Todas", mes="") -> list[Gasto]:
+    def listar(self, categoria="Todas", mes="") -> list[Movimiento]:
         if categoria != "Todas" and categoria not in CATEGORIAS:
             raise ValueError("Categoría de filtro inválida.")
         if mes:
@@ -87,7 +90,7 @@ class Repositorio:
                 date.fromisoformat(mes + "-01")
             except ValueError as error:
                 raise ValueError("Mes inválido.") from error
-        consulta = "SELECT id,fecha,concepto,categoria,centavos FROM gastos WHERE 1=1"
+        consulta = "SELECT id,fecha,concepto,categoria, tipo, centavos FROM movimientos WHERE 1=1"
         parametros = []
         if categoria != "Todas":
             consulta += " AND categoria=?"
@@ -96,10 +99,22 @@ class Repositorio:
             consulta += " AND substr(fecha,1,7)=?"
             parametros.append(mes)
         with self.conexion() as con:
-            return [Gasto(*fila) for fila in con.execute(consulta + " ORDER BY fecha DESC, id DESC", parametros)]
+            return [Movimiento(*fila) for fila in con.execute(consulta + " ORDER BY fecha DESC, id DESC", parametros)]
+
+    def gastos(self):
+        key = 'Gasto'
+        with self.conexion() as con:
+            cursor = con.execute("SELECT centavos FROM movimientos WHERE tipo = ?", (key,))
+            return sum ( [ element[0] for element in cursor.fetchall()] ) 
+
+    def ingresos(self):
+        key = 'Ingreso'
+        with self.conexion() as con:
+            cursor = con.execute("SELECT centavos FROM movimientos WHERE tipo = ?", (key,))
+            return sum ( [ element[0] for element in cursor.fetchall()] ) 
 
     def eliminar(self, id: int):
         with self.conexion() as con:
             cursor = con.execute("DELETE FROM gastos WHERE id=?", (id,))
             if cursor.rowcount != 1:
-                raise ValueError("El gasto ya no existe.")
+                raise ValueError("El movimiento ya no existe.")
