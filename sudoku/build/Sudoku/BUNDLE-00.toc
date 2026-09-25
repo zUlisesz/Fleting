@@ -1,0 +1,3 @@
+([('Sudoku',
+   '/Users/romero/school/pythonP/fleting/proyectos/sudoku/dist/Sudoku',
+   'EXECUTABLE')],)
