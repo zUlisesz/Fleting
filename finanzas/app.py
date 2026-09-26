@@ -10,7 +10,7 @@ def main(page: ft.Page):
     page.title = "Balance · Flujo de efectivo"
     page.padding = 24
     page.scroll = ft.ScrollMode.AUTO
-    page.window.width = 860
+    page.window.width = 880
     page.theme = ft.Theme(color_scheme_seed=ft.Colors.TEAL)
     page.theme_mode = ft.ThemeMode.LIGHT
     ruta = Path(os.environ.get("FLET_DATA_DIR", str(Path.home() / ".fletBD"))) / "finanzas.sqlite3"
@@ -151,6 +151,10 @@ def main(page: ft.Page):
             estado.value = f"No se guardó: {error}"
             page.update()
 
+    def cambiar_tema(e):
+        page.theme_mode = ft.ThemeMode.DARK if e.control.value else ft.ThemeMode.LIGHT
+        page.update()
+
     def confirmar_borrado(movimiento):
         def borrar(e):
             page.pop_dialog()
@@ -178,7 +182,12 @@ def main(page: ft.Page):
         control.col = {"xs": 12, "md": 6}
     page.add(
         ft.Row(
-            [ft.Icon(ft.Icons.ACCOUNT_BALANCE_WALLET, size=32), ft.Text("Balance", size=36, weight=ft.FontWeight.BOLD)],
+            [
+                ft.Icon(ft.Icons.ACCOUNT_BALANCE_WALLET, size=32), 
+                ft.Text("Balance", size=36, weight=ft.FontWeight.BOLD),
+                ft.Container(width= 450), 
+                ft.Switch(label= 'Modo Oscuro', on_change= cambiar_tema)
+            ],
             wrap=True,
         ),
         ft.Text("Controla entradas y salidas de efectivo · demostración local · MXN"),
