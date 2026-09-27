@@ -185,8 +185,9 @@ def main(page: ft.Page):
             [
                 ft.Icon(ft.Icons.ACCOUNT_BALANCE_WALLET, size=32), 
                 ft.Text("Balance", size=36, weight=ft.FontWeight.BOLD),
-                ft.Container(width= 450), 
-                ft.Switch(label= 'Modo Oscuro', on_change= cambiar_tema)
+                ft.Container(width= 540), 
+                ft.Switch(thumb_icon= ft.Icons.SUNNY, on_change= cambiar_tema)
+
             ],
             wrap=True,
         ),
