@@ -1,0 +1,52 @@
+{
+  "Alcalino": {
+    "begin": "top_left",
+    "end": "bottom_right",
+    "colors": ["RED_400", "PINK_500", "RED_900"]
+  },
+  "Alcalinotérreo": {
+    "begin": "top_left",
+    "end": "bottom_right",
+    "colors": ["AMBER_300", "ORANGE_500", "DEEP_ORANGE_800"]
+  },
+  "Metal de transición": {
+    "begin": "top_left",
+    "end": "bottom_right",
+    "colors": ["CYAN_300", "BLUE_500", "INDIGO_900"]
+  },
+  "Metal post-transición": {
+    "begin": "top_center",
+    "end": "bottom_center",
+    "colors": ["LIGHT_BLUE_300", "TEAL_500", "BLUE_800"]
+  },
+  "Metaloide": {
+    "begin": "top_left",
+    "end": "bottom_right",
+    "colors": ["LIME_400", "GREEN_500", "TEAL_800"]
+  },
+  "No metal": {
+    "begin": "top_center",
+    "end": "bottom_center",
+    "colors": ["LIGHT_GREEN_300", "GREEN_600", "GREEN_900"]
+  },
+  "Halógeno": {
+    "begin": "top_left",
+    "end": "bottom_right",
+    "colors": ["YELLOW_400", "AMBER_600", "DEEP_ORANGE_900"]
+  },
+  "Gas noble": {
+    "begin": "top_left",
+    "end": "bottom_right",
+    "colors": ["PURPLE_400", "PINK_500", "RED_600"]
+  },
+  "Lantánido": {
+    "begin": "top_center",
+    "end": "bottom_center",
+    "colors": ["PINK_200", "PINK_500", "PURPLE_700"]
+  },
+  "Actínido": {
+    "begin": "top_center",
+    "end": "bottom_center",
+    "colors": ["DEEP_PURPLE_400", "INDIGO_600", "BLACK"]
+  }
+}
