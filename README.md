@@ -75,4 +75,4 @@ Escribe una función con exactamente dos variables, por ejemplo
 `(x-2)**4 + (x-2*y)**2`, y un punto inicial como `0, 0`. La aplicación muestra
 las iteraciones de Newton y la trayectoria sobre la superficie generada.
 
-Si quieres saber más sobre el método revisa el libro '[Vector Calculus](https://www.mecmath.net/VectorCalculus.pdf)'.
+Si quieres conocer más sobre el método revisa el libro '[Vector Calculus](https://www.mecmath.net/VectorCalculus.pdf)'.
