@@ -47,6 +47,3 @@ class Shell:
             return 
 
         os.remove(path)
-
-
-zsh = Shell()
