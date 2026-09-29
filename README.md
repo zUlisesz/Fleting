@@ -9,6 +9,8 @@ Repositorio con miniaplicaciones construidas en Python y Flet. Sirve como portaf
 - `suma-binaria/`: demo simple para sumar dos números binarios desde una interfaz Flet.
 - `sudoku/` : demo simple de un sudoku 3x3 con GUI Flet.
 - `finanzas/` : demo simple de seguidor de gastos GUI Flet + persistencia local.
+- `files-manager/`: gestor local para explorar carpetas, crear directorios y
+  eliminar archivos o carpetas con confirmación.
 - `tabla-periodica/`: explorador interactivo de los 118 elementos, con
   configuración electrónica, electrones de valencia y análisis básico de
   dopaje y materiales.
@@ -33,7 +35,13 @@ Cada proyecto puede ejecutarse de forma independiente:
 python3 -m suma-binaria.main
 python3 -m sudoku.main
 python3 -m finanzas.app
+python3 files-manager/app.py
 ```
+
+El gestor de archivos inicia en la carpeta personal del usuario. Usa los
+controles de ubicación para entrar a carpetas o subir un nivel; **Nueva
+carpeta** crea directorios y el botón de eliminar pide confirmación antes de
+borrar el elemento seleccionado.
 
 ## Tabla periódica
 
