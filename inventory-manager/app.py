@@ -72,6 +72,7 @@ class InventoryApp:
                     "Producto",
                     "Departamento",
                     "Existencia",
+                    "P. Costo", 
                     "P. Venta",
                     "Tipo de Venta",
                     "Acciones",
@@ -267,6 +268,7 @@ class InventoryApp:
                 "Producto",
                 "Departamento",
                 "Existencia",
+                "P. Costo",
                 "P. Venta",
                 "Tipo de Venta",
             )
