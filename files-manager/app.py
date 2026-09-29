@@ -4,12 +4,11 @@ import flet as ft
 
 try:
     from .back import Shell
-except ImportError:  # Permite ejecutar: python app.py desde esta carpeta.
+except ImportError:  
     from back import Shell
 
 
 class FileManagerApp:
-    """Connects the Flet controls to the filesystem browser."""
 
     def __init__(self, page: ft.Page):
         self.page = page
