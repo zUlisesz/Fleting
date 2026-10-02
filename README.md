@@ -16,6 +16,7 @@ Repositorio con miniaplicaciones construidas en Python y Flet. Sirve como portaf
   dopaje y materiales.
 - `newton/`: visualizador del método de Newton para funciones de dos variables,
   con registro de iteraciones y superficie 3D.
+- `cards/`: generador visual de tarjetas de presentación/perfiles de usuario aleatorios usando Faker y Flet.
 
 ## Instalación
 
@@ -84,3 +85,15 @@ Escribe una función con exactamente dos variables, por ejemplo
 las iteraciones de Newton y la trayectoria sobre la superficie generada.
 
 Si quieres conocer más sobre el método revisa el libro [Vector Calculus](https://www.mecmath.net/VectorCalculus.pdf) página 89.
+
+## Cards
+
+Generador de tarjetas de perfil con avatares aleatorios. Requiere `faker` además de Flet:
+
+```bash
+cd cards
+python3 -m pip install faker
+python3 main.py
+```
+
+Consulta [`cards/README.md`](file:///Users/romero/escuela/pythonP/fleting/proyectos/cards/README.md) para más detalles y oportunidades de colaboración.
