@@ -6,19 +6,9 @@ def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.theme_mode = ft.ThemeMode.LIGHT
-    page.window.width = 920
+    page.window.width = 1200
 
-    def _stat_block(title: str, subtitle: str) -> ft.Control:
-
-        def metric(width: int, height: int = 14,) -> ft.Control:
-            return ft.Container(
-                width=width,
-                height=height,
-                bgcolor=ft.Colors.WHITE,
-                opacity=0.6,
-                border_radius=ft.BorderRadius.all(height),
-            )
-
+    def _stat_block(title: str, subtitle: str, avatar: str) -> ft.Control:
         return ft.Container(
             width=200,
             padding=ft.Padding.all(20),
@@ -26,56 +16,36 @@ def main(page: ft.Page):
             border_radius=ft.BorderRadius.all(24),
             content=ft.Column(
                 spacing=16,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
                     ft.Container(
-                        width= 200,
-                        height= 120,
-                        bgcolor= ft.Colors.AMBER,
-                        border_radius= 8
+                        alignment=ft.Alignment.CENTER,
+                        content=ft.Image(
+                            src=avatar,
+                            width=100,
+                            height=140,
+                            fit=ft.BoxFit.COVER,
+                            repeat=ft.ImageRepeat.NO_REPEAT,
+                            border_radius=ft.BorderRadius.all(10),
+                        ),
                     ),
-                    ft.Container(
-                        border_radius=ft.BorderRadius.all(16),
-                        bgcolor=ft.Colors.WHITE,
-                        opacity=0.35,
-                    ),
-                    ft.Text(title, weight=ft.FontWeight.W_600),
-                    ft.Text(subtitle, size=12),
+                    ft.Text(title, weight=ft.FontWeight.W_600, text_align=ft.TextAlign.CENTER),
+                    ft.Text(subtitle, size=12, text_align=ft.TextAlign.CENTER),
                 ],
             ),
         )
 
-
-    accent = ft.LinearGradient(
-        begin=ft.Alignment(-1.0, -0.5),
-        end=ft.Alignment(1.0, 0.5),
-        colors=[
-            ft.Colors.PURPLE,
-            ft.Colors.PURPLE,
-            ft.Colors.AMBER_200,
-            ft.Colors.PURPLE,
-            ft.Colors.PURPLE,
-        ],
-        stops=[0.0, 0.35, 0.5, 0.65, 1.0],
-    )
-
-
     page.add(
         ft.SafeArea( 
-            content= ft.Row(
-                controls = [
-                    ft.Shimmer(
-                        gradient=accent,
-                        direction=ft.ShimmerDirection.TTB,
-                        period=2200,
-                        content=_stat_block(user['name'], user['phone']),
-                    )
+            content=ft.Row(
+                controls=[
+                    _stat_block(user['name'], user['phone'], user['avatar'])
                     for user in data
                 ],
-                alignment= ft.MainAxisAlignment.CENTER,
-                vertical_alignment= ft.CrossAxisAlignment.CENTER
-
+                alignment=ft.MainAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             )
         )
     )
 
-ft.run( main)
+ft.run(main, assets_dir="assets")
