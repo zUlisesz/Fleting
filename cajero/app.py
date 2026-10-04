@@ -1,4 +1,5 @@
 from model import Cajero
+import flet_audio as fv
 from typing import Callable
 import flet as ft
 
@@ -10,7 +11,25 @@ def main( page : ft.Page):
     page.padding = 40
     page.title = 'ATM with FLET'
 
-    bbva =Cajero()
+    audio = fv.Audio(
+        src= '/audio/click.wav',
+        volume= 0.20, 
+        release_mode= fv.ReleaseMode.STOP
+    )
+
+    succes = fv.Audio(
+        src ='/audio/success.wav',
+        volume= 0.4,
+        release_mode= fv.ReleaseMode.STOP
+    )
+
+    async def sonido_numero():
+        await audio.play()
+
+    async def sonido_success():
+        await succes.play()
+
+    bbva = Cajero()
 
     def generar_billetes():
         monto = int ( ventana.content.value )
@@ -25,17 +44,19 @@ def main( page : ft.Page):
         if stat:
             status.color = ft.Colors.with_opacity(0.8, ft.Colors.CYAN_ACCENT)
 
-    def click_numero(e):
+    async def click_numero(e):
         data = e.control.content.value
         ventana.content.value += data 
+        await sonido_numero()
 
     def click_borrar(e):
         data = ventana.content.value
         ventana.content.value = ''.join( list(data)[:-1])
 
-    def click_enter(e):
+    async def click_enter(e):
         generar_billetes()
         ventana.content.value = ''
+        await sonido_success()
 
     def billete_control(value : str) -> ft.Card:
         return ft.Card(
@@ -82,8 +103,8 @@ def main( page : ft.Page):
         )
 
     billetes =ft.Column(
-        spacing= 2, 
-        height= 456,
+        spacing= 0, 
+        height= 470,
         wrap= True,
         alignment= ft.MainAxisAlignment.START,
         horizontal_alignment= ft.CrossAxisAlignment.CENTER,
@@ -201,4 +222,4 @@ def main( page : ft.Page):
         )
     )
 
-ft.run(main )
+ft.run(main , assets_dir= 'assets')
