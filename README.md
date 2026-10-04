@@ -17,6 +17,7 @@ Repositorio con miniaplicaciones construidas en Python y Flet. Sirve como portaf
 - `newton/`: visualizador del método de Newton para funciones de dos variables,
   con registro de iteraciones y superficie 3D.
 - `cards/`: generador visual de tarjetas de presentación/perfiles de usuario aleatorios usando Faker y Flet.
+- `cajero/`: simulador interactivo de cajero automático (ATM) con teclado virtual, cálculo probabilístico de billetes y validación de fondos.
 
 ## Instalación
 
@@ -37,6 +38,7 @@ python3 -m suma-binaria.main
 python3 -m sudoku.main
 python3 -m finanzas.app
 python3 files-manager/app.py
+python3 cajero/app.py
 ```
 
 El gestor de archivos inicia en la carpeta personal del usuario. Usa los
@@ -96,4 +98,22 @@ python3 -m pip install faker
 python3 main.py
 ```
 
-Consulta [`cards/README.md`](file:///Users/romero/escuela/pythonP/fleting/proyectos/cards/README.md) para más detalles y oportunidades de colaboración.
+Consulta [`cards/README.md`](cards/README.md) para más detalles y oportunidades de colaboración.
+
+## Cajero Automático
+
+Simulador interactivo de cajero automático (ATM) con teclado en pantalla, display de entrada y algoritmo de dispensación probabilística de billetes ($50, $100, $200, $500, $1,000 MXN).
+
+```bash
+cd cajero
+python3 app.py
+```
+
+O usando el CLI de Flet:
+
+```bash
+flet run -r cajero/app.py
+```
+
+Consulta [`cajero/README.md`](cajero/README.md) para conocer las reglas de validación, arquitectura y límites operativos del módulo.
+
