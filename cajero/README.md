@@ -54,6 +54,14 @@ flet run -r app.py
    - Si el monto excede el máximo permitido ($6,000), no cumple el múltiplo correspondiente o supera los fondos del cajero, se notificará el motivo del error.
 4. **Persistencia en sesión:** Cada retiro aprobado descuenta automáticamente el saldo total disponible en la bóveda del cajero.
 
+## Pruebas
+
+Desde la raíz del repositorio, ejecuta las pruebas de reglas y saldo del cajero:
+
+```bash
+python3 -m unittest discover -s cajero/tests -t . -v
+```
+
 ## Arquitectura y Lógica
 
 - `model.py`: Módulo de lógica de negocio y reglas del cajero.
