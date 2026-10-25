@@ -31,18 +31,33 @@ def main( page : ft.Page):
 
     bbva = Cajero()
 
-    def generar_billetes():
-        monto = int ( ventana.content.value )
+    def generar_billetes() -> bool:
+        monto_ingresado = (ventana.content.value or "").strip()
+        if not monto_ingresado:
+            billetes.controls = []
+            status.value = "Ingresa un monto para retirar"
+            status.color = ft.Colors.PINK_ACCENT_700
+            return False
+
+        try:
+            monto = int(monto_ingresado)
+        except ValueError:
+            billetes.controls = []
+            status.value = "Ingresa un monto válido"
+            status.color = ft.Colors.PINK_ACCENT_700
+            return False
+
+        texto, autorizado = bbva.mesaje_retiro(monto)
         billetes.controls = [
             billete_control(f'{billete}')
             for billete in bbva.entregar_dinero(monto)
-        ]
+        ] if autorizado else []
 
-        texto, stat =  bbva.mesaje_retiro(monto)
         status.value = texto
         status.color = ft.Colors.PINK_ACCENT_700
-        if stat:
+        if autorizado:
             status.color = ft.Colors.with_opacity(0.8, ft.Colors.CYAN_ACCENT)
+        return autorizado
 
     async def click_numero(e):
         data = e.control.content.value
@@ -54,9 +69,9 @@ def main( page : ft.Page):
         ventana.content.value = ''.join( list(data)[:-1])
 
     async def click_enter(e):
-        generar_billetes()
-        ventana.content.value = ''
-        await sonido_success()
+        if generar_billetes():
+            ventana.content.value = ''
+            await sonido_success()
 
     def billete_control(value : str) -> ft.Card:
         return ft.Card(

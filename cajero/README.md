@@ -9,7 +9,7 @@ Simulador interactivo de cajero automático (ATM) desarrollado en **Python** uti
 - **Dispensación probabilística:** Algoritmo ponderado (`random.choices`) que asigna probabilidades a las diferentes denominaciones ($50, $100, $200, $500 y $1,000 MXN) de acuerdo con el rango del monto a retirar.
 - **Visualización dinámica de billetes:** Representación gráfica en tarjetas estilizadas (`ft.Card`) ordenadas de mayor a menor denominación.
 - **Reglas y validaciones de retiro:**
-  - Monto mínimo de retiro: **$50 MXN**.
+  - Monto mínimo de retiro: **$100 MXN**.
   - Monto máximo por transacción: **$6,000 MXN**.
   - Validación de múltiplos válidos ($100).
   - Verificación de fondos disponibles en el cajero (Fondo inicial: **$50,000 MXN**).

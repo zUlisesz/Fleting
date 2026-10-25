@@ -21,9 +21,9 @@ class Cajero:
     def autorizar_retiro(self, monto: int ) -> bool:
         """Regrea un valor de True si se cumplen todas las condiciones\n
         de otra manera se regesa un valor False"""
-        if monto > self.max_monto or monto < 50: return False
+        if monto > self.max_monto or monto < 100: return False
         if monto > self.dinero: return False
-        if monto % 50 != 0 :return False
+        if monto % 100 != 0 :return False
         return True
     
     def mesaje_retiro(self, monto : int ) :
@@ -33,9 +33,9 @@ class Cajero:
         :return: str -> 'Devuelve un mensaje de status sobre el intento de retiro
         """
         if monto > self.max_monto: return f'Monto máximo $ {self.max_monto}', False
-        if monto < 50 : return 'Retiros mayores a $ 50', False
+        if monto < 100 : return 'El retiro mínimo es de $ 100', False
         if monto > self.dinero: return 'Saldo del cajero insuficiente', False
-        if monto % 50!= 0 : return 'Monto inválido', False
+        if monto % 100!= 0 : return 'Monto inválido', False
         return f'Retiro por $ {monto} exitoso' , True
 
     def entregar_dinero( self, monto:  int) -> list[int ]:
