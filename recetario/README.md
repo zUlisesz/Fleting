@@ -1,85 +1,61 @@
 # Recetario Personal 🍳
 
-Aplicación de escritorio interactiva para gestionar y organizar recetas de cocina, ingredientes e instrucciones paso a paso, construida con **Python**, **Flet** y **MySQL**.
+Aplicación de escritorio para gestionar recetas, ingredientes y pasos de preparación, construida con Python, Flet y MySQL.
 
----
+## Características
 
-##  Características
+- Crear, consultar, editar y eliminar recetas.
+- Agregar ingredientes con cantidades y unidades, y definir pasos ordenados.
+- Buscar recetas por título.
+- Separar interfaz, dominio, acceso a datos y servicios.
 
-- **Gestión de recetas**: Crear, consultar, editar y eliminar recetas.
-- **Ingredientes e instrucciones**: Agregar ingredientes con cantidades/unidades y definir pasos ordenados de preparación.
-- **Búsqueda en tiempo real**: Filtrar recetas por título al instante.
-- **Interfaz moderna**: UI reactiva y limpia desarrollada con Flet (Flutter para Python).
-- **Arquitectura en capas**: Separación clara en `domain`, `repositories`, `services` y capa de presentación.
+## Requisitos
 
----
+- Python 3.9 o superior.
+- MySQL disponible en el host indicado en `.env`.
 
-##  Tecnologías
+## Instalación y configuración
 
-- **Lenguaje:** Python 3.x
-- **Interfaz Gráfica:** [Flet](https://flet.dev/)
-- **Base de Datos:** MySQL
-- **Conector:** `mysql-connector-python`
+Desde la raíz del repositorio:
 
----
-
-##  Requisitos Previos
-
-1. Servidor **MySQL** en ejecución en `localhost:3306`.
-2. Python 3.9 o superior instalado.
-
----
-
-##  Configuración e Instalación
-
-### 1. Clonar o descargar el repositorio
 ```bash
-git clone <url-del-repositorio>
-cd recetario
+git clone https://github.com/zUlisesz/Fleting.git
+cd Fleting/recetario
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+cp .env.example .env
 ```
 
-### 2. Instalar dependencias
-```bash
-pip install flet mysql-connector-python
-```
+Edita `.env` con los datos de conexión a MySQL. El archivo `.env` está ignorado por Git; no agregues contraseñas al repositorio.
 
-### 3. Configurar la base de datos
-Crea la base de datos y ejecuta el script [schema.sql](file:///Users/romero/escuela/pythonP/fleting/proyectos/recetario/schema.sql):
+Crea la base de datos y carga el esquema incluido en [`schema.sql`](schema.sql):
 
 ```sql
 CREATE DATABASE coocking;
 USE coocking;
--- Ejecutar el contenido de schema.sql
 ```
 
-### 4. Configurar credenciales
-Crea o edita el archivo `passkey.py` en la raíz del proyecto con tu contraseña de MySQL:
+Ejecuta después el contenido de `schema.sql` en esa base de datos.
 
-```python
-PASS = "tu_contraseña_mysql"
-```
+## Ejecución
 
----
-
-## ▶ Ejecución
-
-Para iniciar la aplicación, ejecuta:
+Desde la carpeta `recetario`, con el entorno virtual activado:
 
 ```bash
 python app.py
 ```
 
----
-
-##  Estructura del Proyecto
+## Estructura
 
 ```text
 recetario/
-├── app.py                 # Punto de entrada y UI (Flet)
-├── database/              # Conexión y configuración de la base de datos
-├── domain/                # Modelos de entidad (Recipe, Ingredient, etc.)
-├── repositories/          # Acceso a datos y consultas SQL
-├── services/              # Lógica de negocio (RecipeService)
-├── schema.sql             # Esquema de tablas de la base de datos
-└── passkey.py             # Clave de acceso / credenciales
+├── app.py                 # Punto de entrada y UI Flet
+├── database/              # Configuración y conexión a MySQL
+├── domain/                # Entidades Recipe, Ingredient e Instruction
+├── repositories/          # Consultas y persistencia
+├── services/              # Lógica de aplicación
+├── requirements.txt       # Dependencias de este proyecto
+├── .env.example           # Plantilla de configuración local
+└── schema.sql             # Esquema de las tablas
 ```

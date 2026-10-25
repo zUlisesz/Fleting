@@ -1,0 +1,4 @@
+flet==0.85.3
+mysql-connector-python
+pydantic
+python-dotenv
