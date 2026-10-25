@@ -18,6 +18,7 @@ Repositorio con miniaplicaciones construidas en Python y Flet. Sirve como portaf
   con registro de iteraciones y superficie 3D.
 - `cards/`: generador visual de tarjetas de presentación/perfiles de usuario aleatorios usando Faker y Flet.
 - `cajero/`: simulador interactivo de cajero automático (ATM) con teclado virtual, cálculo probabilístico de billetes y validación de fondos.
+- `recetario/`: aplicación de escritorio para organizar recetas, ingredientes e instrucciones con MySQL.
 
 ## Instalación
 
@@ -39,6 +40,7 @@ python3 -m sudoku.main
 python3 -m finanzas.app
 python3 files-manager/app.py
 python3 cajero/app.py
+cd recetario && python3 app.py
 ```
 
 El gestor de archivos inicia en la carpeta personal del usuario. Usa los
