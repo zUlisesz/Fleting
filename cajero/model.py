@@ -43,6 +43,7 @@ class Cajero:
         con los 'billetes' del retiro ordenados de mayor a menor"""
         
         if not self.autorizar_retiro(monto): return []
+        monto_original = monto
         weights = self.calcular_pesos(monto)
 
         billetes = []
@@ -56,5 +57,5 @@ class Cajero:
             monto-= r
             billetes.append(r)
 
-        self.actualizar_dinero( monto )
+        self.actualizar_dinero(monto_original)
         return sorted(billetes, reverse= True)      
