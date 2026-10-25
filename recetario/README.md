@@ -46,6 +46,14 @@ Desde la carpeta `recetario`, con el entorno virtual activado:
 python app.py
 ```
 
+## Pruebas
+
+Desde la carpeta `recetario`, ejecuta las pruebas de servicio. Las operaciones de persistencia se simulan, así que no se necesita una base MySQL para esta suite:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
 ## Estructura
 
 ```text
