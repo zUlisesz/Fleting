@@ -1,31 +1,51 @@
-from faker import Faker
 import random
-fake = Faker('es')
+
+from faker import Faker
 
 
-def get_random_avatar(gender: str):                                              
-    idx = random.randint(1, 6)                                                            
-    return f"/{gender}_{idx}.png"
+AVATAR_COUNT = 6
+fake = Faker("es")
 
-def makeUser():
 
-    female = fake.boolean(50)
-    if female:
-        return {
-            'name': f'{fake.unique.first_name_female()} {fake.unique.last_name()} {fake.unique.last_name()}',
-            'phone': f'{fake.unique.phone_number()}',
-            'avatar': get_random_avatar('woman'),
-            'address': f'{fake.address()}'
-        }
+def available_avatars() -> list[str]:
+    """Return one shuffled cycle containing every available avatar."""
+    avatars = [
+        f"/{gender}_{index}.png"
+        for gender in ("woman", "man")
+        for index in range(1, AVATAR_COUNT + 1)
+    ]
+    random.shuffle(avatars)
+    return avatars
 
+
+def make_user(avatar: str) -> dict[str, str]:
+    """Create a user whose name matches the gender represented by its avatar."""
+    if avatar.startswith("/woman_"):
+        first_name = fake.unique.first_name_female()
+    else:
+        first_name = fake.unique.first_name_male()
     return {
-        'name': f'{fake.unique.first_name_male()} {fake.unique.last_name()} {fake.unique.last_name()}',
-        'phone': f'{fake.unique.phone_number()}',
-        'avatar': get_random_avatar('man'),
-        'address': f'{fake.address()}'
+        "name": f"{first_name} {fake.unique.last_name()} {fake.unique.last_name()}",
+        "phone": fake.unique.phone_number(),
+        "avatar": avatar,
+        "address": fake.address(),
     }
 
 
-data = [ makeUser() for _ in range(5)]
+def generate_users(count: int = 5) -> list[dict[str, str]]:
+    """Generate users without repeating avatars until all twelve have been used."""
+    if count < 0:
+        raise ValueError("El número de usuarios no puede ser negativo.")
+
+    users = []
+    avatars = []
+    for _ in range(count):
+        if not avatars:
+            avatars = available_avatars()
+        users.append(make_user(avatars.pop()))
+    return users
+
+
+data = generate_users()
 
 
