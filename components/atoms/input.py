@@ -21,6 +21,10 @@ def shadcn_input(
     *,
     hint_text: str | None = None,
     value: str = "",
+    password: bool = False,
+    can_reveal_password: bool = False,
+    outlined: bool = True,
+    prefix_icon: ft.IconData | None = None,
     on_change: Callable[..., None] | None = None,
     width: int | float | None = 320,
 ) -> ft.TextField:
@@ -30,6 +34,9 @@ def shadcn_input(
         label=label,
         hint_text=hint_text,
         value=value,
+        password=password,
+        can_reveal_password=can_reveal_password,
+        prefix_icon=prefix_icon,
         width=width,
         on_change=on_change,
         color=COLORS.text,
@@ -37,10 +44,14 @@ def shadcn_input(
         hint_style=ft.TextStyle(color=COLORS.placeholder),
         cursor_color=COLORS.text,
         content_padding=ft.Padding.symmetric(horizontal=12, vertical=14),
-        border={
-            ft.ControlState.DEFAULT: _input_border(COLORS.border),
-            ft.ControlState.HOVERED: _input_border(COLORS.muted),
-            ft.ControlState.FOCUSED: _input_border(COLORS.text),
-        },
+        border=(
+            {
+                ft.ControlState.DEFAULT: _input_border(COLORS.border),
+                ft.ControlState.HOVERED: _input_border(COLORS.muted),
+                ft.ControlState.FOCUSED: _input_border(COLORS.text),
+            }
+            if outlined
+            else ft.NoInputBorder()
+        ),
     )
 
