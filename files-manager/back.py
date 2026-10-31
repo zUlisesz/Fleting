@@ -6,12 +6,15 @@ import shutil
 class Shell:
 
     def __init__(self, start_path: str | Path | None = None) -> None:
-        self.cwd = Path(start_path or Path.home()).expanduser().resolve()
-        if not self.cwd.is_dir():
-            raise NotADirectoryError(self.cwd)
+        self.root = Path(start_path or Path.home()).expanduser().resolve()
+        if not self.root.is_dir():
+            raise NotADirectoryError(self.root)
+        self.cwd = self.root
 
     def cd(self, route: str = "..") -> None:
         target = (self.cwd / route).resolve()
+        if not target.is_relative_to(self.root):
+            raise ValueError("No puedes salir de la carpeta inicial.")
         if not target.is_dir():
             raise NotADirectoryError(target)
         self.cwd = target
@@ -27,7 +30,8 @@ class Shell:
         return [entry for entry in self.ls() if entry.is_dir()]
 
     def relative_pwd(self) -> str:
-        return self.cwd.name or str(self.cwd)
+        relative_path = self.cwd.relative_to(self.root)
+        return str(relative_path) if relative_path.parts else self.root.name
 
     @staticmethod
     def _safe_name(name: str) -> str:
