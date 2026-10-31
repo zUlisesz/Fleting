@@ -8,6 +8,9 @@ import sympy as sp
 
 DEFAULT_TOLERANCE = 1e-6
 DEFAULT_MAX_ITERATIONS = 14
+LOCAL_MINIMUM = "mínimo local"
+LOCAL_MAXIMUM = "máximo local"
+SADDLE_OR_FLAT_POINT = "punto silla o plano"
 
 
 @dataclass(frozen=True)
@@ -20,6 +23,7 @@ class NewtonResult:
     history: tuple[np.ndarray, ...]
     converged: bool
     iterations: int
+    stationary_point_type: str | None
 
 
 def solve_newton(
@@ -41,7 +45,18 @@ def solve_newton(
     for iteration in range(1, max_iterations + 1):
         gradient_value = _as_gradient(evaluate_gradient(*point))
         if np.linalg.norm(gradient_value) < tolerance:
-            return _result(expression, variables, point, history, True, iteration - 1)
+            stationary_point_type = _classify_hessian(
+                _as_hessian(evaluate_hessian(*point)), tolerance
+            )
+            return _result(
+                expression,
+                variables,
+                point,
+                history,
+                True,
+                iteration - 1,
+                stationary_point_type,
+            )
 
         hessian_value = _as_hessian(evaluate_hessian(*point))
         try:
@@ -57,7 +72,18 @@ def solve_newton(
 
     gradient_value = _as_gradient(evaluate_gradient(*point))
     converged = bool(np.linalg.norm(gradient_value) < tolerance)
-    return _result(expression, variables, point, history, converged, max_iterations)
+    stationary_point_type = (
+        _classify_hessian(_as_hessian(evaluate_hessian(*point)), tolerance) if converged else None
+    )
+    return _result(
+        expression,
+        variables,
+        point,
+        history,
+        converged,
+        max_iterations,
+        stationary_point_type,
+    )
 
 
 def evaluate_surface(result: NewtonResult, x_values: np.ndarray, y_values: np.ndarray) -> np.ndarray:
@@ -108,6 +134,16 @@ def _as_hessian(value: object) -> np.ndarray:
     return hessian
 
 
+def _classify_hessian(hessian: np.ndarray, tolerance: float) -> str:
+    """Classify a stationary point instead of assuming it is a minimum."""
+    eigenvalues = np.linalg.eigvalsh(hessian)
+    if np.all(eigenvalues > tolerance):
+        return LOCAL_MINIMUM
+    if np.all(eigenvalues < -tolerance):
+        return LOCAL_MAXIMUM
+    return SADDLE_OR_FLAT_POINT
+
+
 def _result(
     expression: sp.Expr,
     variables: tuple[sp.Symbol, sp.Symbol],
@@ -115,6 +151,7 @@ def _result(
     history: list[np.ndarray],
     converged: bool,
     iterations: int,
+    stationary_point_type: str | None,
 ) -> NewtonResult:
     return NewtonResult(
         expression=expression,
@@ -123,4 +160,5 @@ def _result(
         history=tuple(item.copy() for item in history),
         converged=converged,
         iterations=iterations,
+        stationary_point_type=stationary_point_type,
     )

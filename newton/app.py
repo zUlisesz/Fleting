@@ -6,9 +6,9 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 
 try:
-    from .optimizer import NewtonResult, evaluate_surface, solve_newton
+    from .optimizer import LOCAL_MINIMUM, NewtonResult, evaluate_surface, solve_newton
 except ImportError:  # Allows: python newton/app.py
-    from optimizer import NewtonResult, evaluate_surface, solve_newton
+    from optimizer import LOCAL_MINIMUM, NewtonResult, evaluate_surface, solve_newton
 
 
 APP_TITLE = "Newton Optimizer & Surface Visualizer"
@@ -58,8 +58,15 @@ def iteration_log(result: NewtonResult) -> list[ft.Control]:
     if result.converged:
         controls.append(
             ft.Text(
-                f"Convergencia alcanzada en {result.iterations} iteración(es).",
-                color=ft.Colors.GREEN,
+                (
+                    f"Convergencia alcanzada en {result.iterations} iteración(es). "
+                    f"Clasificación: {result.stationary_point_type}."
+                ),
+                color=(
+                    ft.Colors.GREEN
+                    if result.stationary_point_type == LOCAL_MINIMUM
+                    else ft.Colors.AMBER
+                ),
                 weight=ft.FontWeight.BOLD,
             )
         )
@@ -176,8 +183,16 @@ class NewtonApp:
                 fit=ft.BoxFit.CONTAIN,
                 height=480,
             )
-            self.status.value = "Resultado generado." if result.converged else "Resultado generado sin convergencia."
-            self.status.color = ft.Colors.GREEN_700 if result.converged else ft.Colors.AMBER_800
+            if result.converged:
+                self.status.value = f"Punto estacionario: {result.stationary_point_type}."
+                self.status.color = (
+                    ft.Colors.GREEN_700
+                    if result.stationary_point_type == LOCAL_MINIMUM
+                    else ft.Colors.AMBER_800
+                )
+            else:
+                self.status.value = "Resultado generado sin convergencia."
+                self.status.color = ft.Colors.AMBER_800
         except (ValueError, TypeError, OverflowError) as error:
             self.status.value = f"No se pudo optimizar: {error}"
             self.status.color = ft.Colors.RED_700
