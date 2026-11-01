@@ -10,6 +10,8 @@ materiales y dopaje.
 - Búsqueda por símbolo o nombre; los elementos coincidentes se resaltan.
 - Consulta de número atómico, masa, categoría, configuración electrónica,
   electrones de valencia y huecos de un elemento.
+- Validación estricta de números atómicos enteros entre 1 y 118 antes de
+  calcular una configuración electrónica.
 - Análisis de dos símbolos químicos para clasificar combinaciones básicas como
   semiconductor intrínseco, dopaje tipo N, dopaje tipo P, conductor o aislante.
 
@@ -75,6 +77,7 @@ componentes de Flutter requeridos por Flet.
 - `src/table.json`: distribución visual de la tabla.
 - `src/colors.json`: colores por categoría.
 - `tests/test_main.py`: prueba de integración de la pantalla principal.
+- `tests/test_algorithm.py`: pruebas de los límites del cálculo químico.
 
 ## Empaquetado
 

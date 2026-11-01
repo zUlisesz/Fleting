@@ -1,9 +1,12 @@
 """Utility functions for electronic configuration and valence analysis."""
 
 
+MAX_ATOMIC_NUMBER = 118
+
+
 def calculate_chemistry_data(atomic_number):
-    """Return the electronic configuration, valence electrons, and octet holes."""
-    if not isinstance(atomic_number, int) or atomic_number < 1:
+    """Return data only for a real atomic number in the supported table."""
+    if type(atomic_number) is not int or not 1 <= atomic_number <= MAX_ATOMIC_NUMBER:
         return None
 
     orbitals_order = [
@@ -28,6 +31,9 @@ def calculate_chemistry_data(atomic_number):
         shell_electrons.append({"n": n, "e": electrons_in_orbital})
         max_n = max(max_n, n)
         remaining_electrons -= electrons_in_orbital
+
+    if remaining_electrons:
+        return None
 
     valence_electrons = sum(orbital["e"] for orbital in shell_electrons if orbital["n"] == max_n)
     target_valence = 2 if max_n == 1 else 8
