@@ -1,22 +1,13 @@
-import random
 class Cajero:
 
     def __init__(self):
         self.dinero : int = 50_000
         self.max_monto : int = 6_000
-        self.billetes = [50, 100, 200, 500, 1000]
+        self.billetes = (50, 100, 200, 500, 1000)
 
     def actualizar_dinero(self, monto : int) :
         '''Actualiza el estado de cajero'''
         self.dinero -= monto
-
-    @classmethod
-    def calcular_pesos(cls, monto: int ) -> list[int]:
-        if monto <= 500: return [3, 8, 6, 2, 0]
-        if monto <= 1000: return [1,6,6,6,0]  
-        if monto <= 2000: return [2,4,6, 8,2]
-        if monto <= 300: return [2,4,4, 8,4]
-        return [1, 2, 2, 4,10]
 
     def autorizar_retiro(self, monto: int ) -> bool:
         """Regrea un valor de True si se cumplen todas las condiciones\n
@@ -38,24 +29,19 @@ class Cajero:
         if monto % 100!= 0 : return 'Monto inválido', False
         return f'Retiro por $ {monto} exitoso' , True
 
-    def entregar_dinero( self, monto:  int) -> list[int ]:
-        """Si se autoriza el retiro se devuelve una lista\n
-        con los 'billetes' del retiro ordenados de mayor a menor"""
-        
-        if not self.autorizar_retiro(monto): return []
-        monto_original = monto
-        weights = self.calcular_pesos(monto)
+    def entregar_dinero(self, monto: int) -> list[int]:
+        """Entrega un importe autorizado con billetes que siempre suman el retiro."""
+        if not self.autorizar_retiro(monto):
+            return []
 
-        billetes = []
-        while monto >= 50 :
-            r = random.choices( 
-                self.billetes, 
-                weights= weights,
-                k= 1
-            )[0]
-            if r > monto : continue
-            monto-= r
-            billetes.append(r)
+        pendiente = monto
+        entregados = []
+        for denominacion in sorted(self.billetes, reverse=True):
+            cantidad, pendiente = divmod(pendiente, denominacion)
+            entregados.extend([denominacion] * cantidad)
 
-        self.actualizar_dinero(monto_original)
-        return sorted(billetes, reverse= True)      
+        if pendiente:
+            raise ValueError("No se puede entregar el monto con las denominaciones disponibles.")
+
+        self.actualizar_dinero(monto)
+        return entregados

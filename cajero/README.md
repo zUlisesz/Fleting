@@ -1,12 +1,12 @@
 # Cajero Automático · Simulador ATM con Flet
 
-Simulador interactivo de cajero automático (ATM) desarrollado en **Python** utilizando **Flet**. Proporciona una interfaz gráfica moderna inspirada en cajeros bancarios reales, con teclado numérico virtual, display digital, validación de retiros y un algoritmo probabilístico para la dispensación y visualización dinámica de billetes.
+Simulador interactivo de cajero automático (ATM) desarrollado en **Python** utilizando **Flet**. Proporciona una interfaz gráfica moderna inspirada en cajeros bancarios reales, con teclado numérico virtual, display digital, validación de retiros y dispensación exacta de billetes.
 
 ## Funciones disponibles
 
 - **Teclado ATM interactivo:** Teclado numérico en pantalla (`0`-`9`, `BORRAR`, `ENTER`) con respuesta visual e interactiva.
 - **Display digital:** Pantalla de alta visibilidad para visualizar e ingresar el monto solicitado en tiempo real.
-- **Dispensación probabilística:** Algoritmo ponderado (`random.choices`) que asigna probabilidades a las diferentes denominaciones ($50, $100, $200, $500 y $1,000 MXN) de acuerdo con el rango del monto a retirar.
+- **Dispensación exacta:** El cajero usa las denominaciones disponibles ($50, $100, $200, $500 y $1,000 MXN) de mayor a menor, asegurando que los billetes entregados sumen exactamente el monto autorizado.
 - **Visualización dinámica de billetes:** Representación gráfica en tarjetas estilizadas (`ft.Card`) ordenadas de mayor a menor denominación.
 - **Reglas y validaciones de retiro:**
   - Monto mínimo de retiro: **$100 MXN**.
@@ -66,10 +66,9 @@ python3 -m unittest discover -s cajero/tests -t . -v
 
 - `model.py`: Módulo de lógica de negocio y reglas del cajero.
   - Clase `Cajero`: administra el balance (`$50,000`), límite por transacción (`$6,000`) y catálogo de billetes (`[50, 100, 200, 500, 1000]`).
-  - `calcular_pesos(monto)`: calcula la distribución de pesos estadísticos para cada denominación según el monto requerido.
   - `autorizar_retiro(monto)`: valida que el importe cumpla con las reglas operativas y fondos.
   - `mesaje_retiro(monto)`: genera el texto de retroalimentación y bandera de estado.
-  - `entregar_dinero(monto)`: efectúa la selección probabilística de billetes y los entrega ordenados de forma descendente.
+  - `entregar_dinero(monto)`: construye una entrega exacta de billetes ordenados de forma descendente.
 - `app.py`: Capa de presentación construida con Flet.
   - Ensambla la estructura del cajero (`maquina`), el display digital (`ventana`), los controles numéricos (`generarControles`), el indicador de `status` y la columna de tarjetas (`billetes`).
 

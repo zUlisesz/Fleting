@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import patch
 
 from cajero.model import Cajero
 
@@ -8,10 +7,9 @@ class CajeroTests(unittest.TestCase):
     def test_successful_withdrawal_returns_bills_and_reduces_balance(self):
         cajero = Cajero()
 
-        with patch("cajero.model.random.choices", side_effect=[[100], [100]]):
-            bills = cajero.entregar_dinero(200)
+        bills = cajero.entregar_dinero(200)
 
-        self.assertEqual(bills, [100, 100])
+        self.assertEqual(bills, [200])
         self.assertEqual(cajero.dinero, 49_800)
 
     def test_invalid_withdrawals_return_no_bills_and_preserve_balance(self):
@@ -35,11 +33,20 @@ class CajeroTests(unittest.TestCase):
     def test_minimum_valid_withdrawal_is_one_hundred(self):
         cajero = Cajero()
 
-        with patch("cajero.model.random.choices", return_value=[100]):
-            bills = cajero.entregar_dinero(100)
+        bills = cajero.entregar_dinero(100)
 
         self.assertEqual(bills, [100])
         self.assertEqual(cajero.dinero, 49_900)
+
+    def test_every_authorized_withdrawal_is_delivered_exactly(self):
+        for amount in range(100, 6_001, 100):
+            with self.subTest(amount=amount):
+                cajero = Cajero()
+
+                bills = cajero.entregar_dinero(amount)
+
+                self.assertEqual(sum(bills), amount)
+                self.assertTrue(all(bill in cajero.billetes for bill in bills))
 
 
 if __name__ == "__main__":
