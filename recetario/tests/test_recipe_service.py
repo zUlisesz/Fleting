@@ -17,6 +17,13 @@ class RecipeServiceTests(unittest.TestCase):
         self.assertEqual(recipe.title, "Sopa")
         create_recipe.assert_called_once_with(recipe)
 
+    def test_normalizes_recipe_titles_before_persisting(self):
+        with patch.object(RecipeRepository, "createRecipe") as create_recipe:
+            recipe = RecipeService.create_recipe("  Sopa  ", recipe_id="recipe-1")
+
+        self.assertEqual(recipe.title, "Sopa")
+        create_recipe.assert_called_once_with(recipe)
+
     def test_update_and_delete_recipe_delegate_to_repository(self):
         with patch.object(RecipeRepository, "updateRecipe", return_value=True) as update_recipe:
             self.assertTrue(RecipeService.update_recipe_title("recipe-1", "Sopa verde"))
@@ -80,6 +87,16 @@ class RecipeServiceTests(unittest.TestCase):
         ) as delete_instruction:
             self.assertTrue(RecipeService.delete_step("step-1"))
         delete_instruction.assert_called_once_with("step-1")
+
+    def test_rejects_empty_text_and_invalid_step_numbers(self):
+        with self.assertRaises(ValueError):
+            RecipeService.create_recipe("   ")
+        with self.assertRaises(ValueError):
+            RecipeService.register_ingredient(" ")
+        with self.assertRaises(ValueError):
+            RecipeService.add_step("recipe-1", 0, "Mezclar")
+        with self.assertRaises(ValueError):
+            RecipeService.add_step("recipe-1", 1, " ")
 
 
 if __name__ == "__main__":

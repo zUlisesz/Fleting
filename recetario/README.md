@@ -8,6 +8,7 @@ Aplicación de escritorio para gestionar recetas, ingredientes y pasos de prepar
 - Agregar ingredientes con cantidades y unidades, y definir pasos ordenados.
 - Buscar recetas por título.
 - Separar interfaz, dominio, acceso a datos y servicios.
+- Normalizar y validar títulos, ingredientes y pasos antes de persistirlos.
 
 ## Requisitos
 
