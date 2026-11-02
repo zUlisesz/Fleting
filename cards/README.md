@@ -1,6 +1,6 @@
 # Cards · Perfiles de Usuario
 
-Visualizador de tarjetas de usuario generado con **Flet** y **Faker**, mostrando nombres, números telefónicos y avatares personalizados.
+Visualizador de tarjetas de usuario generado con **Flet** y **Faker**, mostrando nombres, números telefónicos, direcciones y avatares personalizados.
 
 ## Requisitos
 
@@ -30,7 +30,7 @@ flet run main.py
 
 ## Estructura
 
-- `main.py`: Interfaz de usuario construida con Flet (tarjetas, layout y diseño visual).
+- `main.py`: Interfaz de usuario construida con Flet (tarjetas, layout responsive y diseño visual).
 - `model.py`: Generación de datos falsos (nombres, teléfonos, direcciones y asignación de avatares).
 - `assets/`: Conjunto de imágenes de avatares masculinos y femeninos (`man_1..6`, `woman_1..6`).
 
