@@ -54,7 +54,8 @@ def resumir(movimientos: list[Movimiento]) -> dict:
     ingresos = 0
     gastos = 0
     for movimiento in movimientos:
-        categorias[movimiento.categoria] = categorias.get(movimiento.categoria, 0) + movimiento.centavos
+        category_key = f"{movimiento.tipo} · {movimiento.categoria}"
+        categorias[category_key] = categorias.get(category_key, 0) + movimiento.centavos
         if movimiento.tipo == "Ingreso":
             ingresos += movimiento.centavos
         else:

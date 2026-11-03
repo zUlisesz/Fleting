@@ -25,7 +25,7 @@ python3 -m finanzas.app
 - `modelo.py`: Movimiento, conversión con Decimal, resumen de flujo de efectivo, migración y repositorio.
 - `app.py`: formulario, filtros explícitos, tarjetas, tabla desplazable y barras.
 
-Se aceptan punto o coma decimal, máximo dos decimales y ningún separador de miles. El máximo por movimiento es 9,999,999.99 MXN. No se redondea silenciosamente una entrada con más decimales. Las barras indican proporción del **total filtrado**; no son presupuestos ni metas. Las entradas se suman al saldo y las salidas se restan. Las bases existentes con tabla `gastos` se migran como movimientos de tipo `Gasto`; la tabla antigua se conserva como respaldo. No se agregan movimientos de ejemplo automáticamente.
+Se aceptan punto o coma decimal, máximo dos decimales y ningún separador de miles. El máximo por movimiento es 9,999,999.99 MXN. No se redondea silenciosamente una entrada con más decimales. Las barras indican proporción del **total filtrado** y mantienen separadas las categorías de ingresos y gastos; no son presupuestos ni metas. Las entradas se suman al saldo y las salidas se restan. Las bases existentes con tabla `gastos` se migran como movimientos de tipo `Gasto`; la tabla antigua se conserva como respaldo. No se agregan movimientos de ejemplo automáticamente.
 
 La base se crea en `~/.fletDB/finanzas.sqlite3`. Usa `FLET_DATA_DIR` para elegir otro directorio. App para un usuario local, sin conexión bancaria, autenticación, conversión de monedas o sincronización de sesiones. No está preparada como servicio público multiusuario.
 
