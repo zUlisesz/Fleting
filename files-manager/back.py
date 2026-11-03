@@ -33,6 +33,10 @@ class Shell:
         relative_path = self.cwd.relative_to(self.root)
         return str(relative_path) if relative_path.parts else self.root.name
 
+    def can_go_up(self) -> bool:
+        """Return whether the current directory has a parent within the session root."""
+        return self.cwd != self.root
+
     @staticmethod
     def _safe_name(name: str) -> str:
         clean = name.strip()

@@ -10,6 +10,8 @@ class ShellTests(unittest.TestCase):
         with TemporaryDirectory() as temporary_directory:
             shell = Shell(temporary_directory)
 
+            self.assertFalse(shell.can_go_up())
+
             with self.assertRaises(ValueError):
                 shell.cd("..")
 
@@ -25,6 +27,7 @@ class ShellTests(unittest.TestCase):
 
             self.assertEqual(shell.cwd, child.resolve())
             self.assertEqual(shell.relative_pwd(), "documentos")
+            self.assertTrue(shell.can_go_up())
 
 
 if __name__ == "__main__":

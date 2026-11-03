@@ -11,7 +11,7 @@ python3 app.py
 
 ## Alcance de seguridad
 
-La carpeta inicial es el límite de navegación de la sesión. La aplicación permite entrar a subcarpetas y volver a sus niveles superiores dentro de ese límite, pero no salir de él. Las eliminaciones son permanentes y se solicitan con confirmación.
+La carpeta inicial es el límite de navegación de la sesión. La aplicación permite entrar a subcarpetas y volver a sus niveles superiores dentro de ese límite, pero no salir de él. Al llegar a la carpeta inicial, el botón para subir informa que ya no hay un nivel disponible. Las eliminaciones son permanentes y se solicitan con confirmación.
 
 ## Estructura
 

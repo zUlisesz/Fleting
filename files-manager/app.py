@@ -166,8 +166,8 @@ class FileManagerApp:
             self._notify(f"No se pudo abrir la carpeta: {error}", error=True)
 
     def _go_up(self, _: ft.ControlEvent) -> None:
-        if self.browser.cwd.parent == self.browser.cwd:
-            self._notify("Ya estás en la carpeta raíz.")
+        if not self.browser.can_go_up():
+            self._notify("Ya estás en la carpeta inicial.")
             return
         self.browser.cd("..")
         self._refresh()
