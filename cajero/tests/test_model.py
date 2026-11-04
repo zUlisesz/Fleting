@@ -21,6 +21,14 @@ class CajeroTests(unittest.TestCase):
                 self.assertEqual(bills, [])
                 self.assertEqual(cajero.dinero, 50_000)
 
+    def test_withdrawal_message_matches_the_authorization_result(self):
+        cajero = Cajero()
+
+        message, authorized = cajero.mensaje_retiro(200)
+
+        self.assertTrue(authorized)
+        self.assertEqual(message, "Retiro por $ 200 exitoso")
+
     def test_withdrawal_over_available_balance_is_rejected(self):
         cajero = Cajero()
         cajero.dinero = 100

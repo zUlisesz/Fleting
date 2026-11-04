@@ -17,7 +17,7 @@ class Cajero:
         if monto % 100 != 0 :return False
         return True
     
-    def mesaje_retiro(self, monto : int ) :
+    def mensaje_retiro(self, monto: int) -> tuple[str, bool]:
         """
         Descripción\n
         :monto: int -> Recibe un número entero representando el monto a retirar\n
