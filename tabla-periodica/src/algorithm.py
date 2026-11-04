@@ -2,6 +2,10 @@
 
 
 MAX_ATOMIC_NUMBER = 118
+ORBITAL_EXCEPTIONS = {
+    24: {"4s": 1, "3d": 5},  # Chromium
+    29: {"4s": 1, "3d": 10},  # Copper
+}
 
 
 def calculate_chemistry_data(atomic_number):
@@ -18,7 +22,6 @@ def calculate_chemistry_data(atomic_number):
     ]
 
     remaining_electrons = atomic_number
-    config_parts = []
     shell_electrons = []
     max_n = 0
 
@@ -27,13 +30,19 @@ def calculate_chemistry_data(atomic_number):
             break
 
         electrons_in_orbital = min(remaining_electrons, cap)
-        config_parts.append(f"{label}^{electrons_in_orbital}")
-        shell_electrons.append({"n": n, "e": electrons_in_orbital})
+        shell_electrons.append({"n": n, "label": label, "e": electrons_in_orbital})
         max_n = max(max_n, n)
         remaining_electrons -= electrons_in_orbital
 
     if remaining_electrons:
         return None
+
+    for orbital in shell_electrons:
+        corrected_electrons = ORBITAL_EXCEPTIONS.get(atomic_number, {}).get(orbital["label"])
+        if corrected_electrons is not None:
+            orbital["e"] = corrected_electrons
+
+    config_parts = [f"{orbital['label']}^{orbital['e']}" for orbital in shell_electrons]
 
     valence_electrons = sum(orbital["e"] for orbital in shell_electrons if orbital["n"] == max_n)
     target_valence = 2 if max_n == 1 else 8

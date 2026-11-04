@@ -12,6 +12,8 @@ materiales y dopaje.
   electrones de valencia y huecos de un elemento.
 - Validación estricta de números atómicos enteros entre 1 y 118 antes de
   calcular una configuración electrónica.
+- Configuraciones electrónicas ajustadas para las excepciones conocidas de
+  cromo y cobre.
 - Análisis de dos símbolos químicos para clasificar combinaciones básicas como
   semiconductor intrínseco, dopaje tipo N, dopaje tipo P, conductor o aislante.
 

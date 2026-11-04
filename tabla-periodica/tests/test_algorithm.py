@@ -20,6 +20,13 @@ class ChemistryDataTests(unittest.TestCase):
             with self.subTest(atomic_number=atomic_number):
                 self.assertIsNone(calculate_chemistry_data(atomic_number))
 
+    def test_uses_known_chromium_and_copper_orbital_exceptions(self):
+        chromium = calculate_chemistry_data(24)
+        copper = calculate_chemistry_data(29)
+
+        self.assertTrue(chromium["configuration"].endswith("4s^1 3d^5"))
+        self.assertTrue(copper["configuration"].endswith("4s^1 3d^10"))
+
 
 if __name__ == "__main__":
     unittest.main()
