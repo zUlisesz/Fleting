@@ -17,6 +17,13 @@ class GenerateUsersTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             generate_users(-1)
 
+    def test_can_generate_repeatable_demo_data_with_a_seed(self):
+        self.assertEqual(generate_users(3, seed=7), generate_users(3, seed=7))
+
+    def test_rejects_boolean_counts(self):
+        with self.assertRaises(ValueError):
+            generate_users(True)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -37,3 +37,5 @@ flet run main.py
 ## Asignación de avatares
 
 El generador baraja los doce avatares disponibles y los asigna sin repetición durante cada ciclo. Si se solicitan más de doce perfiles, inicia un ciclo nuevo, por lo que los avatares solo se repiten después de que todos se hayan usado una vez.
+
+`generate_users()` acepta una semilla opcional para producir el mismo conjunto de perfiles durante demostraciones o pruebas, por ejemplo `generate_users(5, seed=7)`.
