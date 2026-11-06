@@ -49,6 +49,19 @@ class Shell:
         target.mkdir()
         return target
 
+    def rename(self, current_name: str, new_name: str) -> Path:
+        """Rename one direct child without permitting paths outside the session root."""
+        source = self.cwd / self._safe_name(current_name)
+        target = self.cwd / self._safe_name(new_name)
+        if source == target:
+            raise ValueError("El nombre nuevo debe ser diferente.")
+        if not source.exists() and not source.is_symlink():
+            raise FileNotFoundError(source)
+        if target.exists() or target.is_symlink():
+            raise FileExistsError(target)
+        source.rename(target)
+        return target
+
     def rm(self, name: str) -> None:
         """Remove one child of the current directory (files or folders)."""
         target = self.cwd / self._safe_name(name)

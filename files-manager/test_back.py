@@ -29,6 +29,20 @@ class ShellTests(unittest.TestCase):
             self.assertEqual(shell.relative_pwd(), "documentos")
             self.assertTrue(shell.can_go_up())
 
+    def test_renames_a_direct_child_without_leaving_the_initial_directory(self):
+        with TemporaryDirectory() as temporary_directory:
+            original = Path(temporary_directory) / "nota.txt"
+            original.write_text("contenido")
+            shell = Shell(temporary_directory)
+
+            renamed = shell.rename("nota.txt", "tarea.txt")
+
+            self.assertEqual(renamed.name, "tarea.txt")
+            self.assertTrue(renamed.is_file())
+            self.assertFalse(original.exists())
+            with self.assertRaises(ValueError):
+                shell.rename("tarea.txt", "../fuera.txt")
+
 
 if __name__ == "__main__":
     unittest.main()
