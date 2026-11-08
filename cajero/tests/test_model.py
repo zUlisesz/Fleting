@@ -56,6 +56,18 @@ class CajeroTests(unittest.TestCase):
                 self.assertEqual(sum(bills), amount)
                 self.assertTrue(all(bill in cajero.billetes for bill in bills))
 
+    def test_non_integer_amounts_are_rejected_without_raising(self):
+        for amount in (100.0, True, "100", None):
+            with self.subTest(amount=amount):
+                cajero = Cajero()
+
+                message, authorized = cajero.mensaje_retiro(amount)
+
+                self.assertFalse(authorized)
+                self.assertEqual(message, "Monto inválido")
+                self.assertEqual(cajero.entregar_dinero(amount), [])
+                self.assertEqual(cajero.dinero, 50_000)
+
 
 if __name__ == "__main__":
     unittest.main()
