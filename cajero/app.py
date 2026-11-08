@@ -47,7 +47,7 @@ def main( page : ft.Page):
             status.color = ft.Colors.PINK_ACCENT_700
             return False
 
-        texto, autorizado = bbva.mesaje_retiro(monto)
+        texto, autorizado = bbva.mensaje_retiro(monto)
         billetes.controls = [
             billete_control(f'{billete}')
             for billete in bbva.entregar_dinero(monto)

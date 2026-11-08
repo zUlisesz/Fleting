@@ -14,6 +14,8 @@ from repositories.recipe_ingredient import RecipeIngredientRepository
 
 def _required_text(value: str, field_name: str, maximum_length: int) -> str:
     """Normalize required user text before it reaches the persistence layer."""
+    if not isinstance(value, str):
+        raise ValueError(f"{field_name} debe ser texto.")
     normalized = value.strip()
     if not normalized:
         raise ValueError(f"{field_name} no puede estar vacío.")
@@ -25,6 +27,8 @@ def _required_text(value: str, field_name: str, maximum_length: int) -> str:
 def _optional_text(value: Optional[str], maximum_length: int) -> Optional[str]:
     if value is None:
         return None
+    if not isinstance(value, str):
+        raise ValueError("El texto debe ser válido.")
     normalized = value.strip()
     if not normalized:
         return None

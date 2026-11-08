@@ -1,6 +1,6 @@
 # Gestor de archivos
 
-Aplicación local de Flet para explorar una carpeta, crear subcarpetas y eliminar elementos con confirmación.
+Aplicación local de Flet para explorar una carpeta, crear subcarpetas, renombrar elementos y eliminarlos con confirmación.
 
 ## Ejecutar
 

@@ -67,7 +67,7 @@ python3 -m unittest discover -s cajero/tests -t . -v
 - `model.py`: Módulo de lógica de negocio y reglas del cajero.
   - Clase `Cajero`: administra el balance (`$50,000`), límite por transacción (`$6,000`) y catálogo de billetes (`[50, 100, 200, 500, 1000]`).
   - `autorizar_retiro(monto)`: valida que el importe cumpla con las reglas operativas y fondos.
-  - `mesaje_retiro(monto)`: genera el texto de retroalimentación y bandera de estado.
+  - `mensaje_retiro(monto)`: genera el texto de retroalimentación y bandera de estado.
   - `entregar_dinero(monto)`: construye una entrega exacta de billetes ordenados de forma descendente.
 - `app.py`: Capa de presentación construida con Flet.
   - Ensambla la estructura del cajero (`maquina`), el display digital (`ventana`), los controles numéricos (`generarControles`), el indicador de `status` y la columna de tarjetas (`billetes`).

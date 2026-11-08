@@ -143,6 +143,11 @@ class FileManagerApp:
                             expand=True,
                         ),
                         ft.IconButton(
+                            ft.Icons.EDIT_OUTLINED,
+                            tooltip="Renombrar",
+                            on_click=lambda _: self._rename_item(path.name),
+                        ),
+                        ft.IconButton(
                             ft.Icons.DELETE_OUTLINE,
                             tooltip="Eliminar",
                             on_click=lambda _: self._confirm_delete(path.name),
@@ -193,6 +198,31 @@ class FileManagerApp:
                 actions=[
                     ft.TextButton("Cancelar", on_click=lambda _: self.page.pop_dialog()),
                     ft.TextButton("Crear", on_click=save),
+                ],
+            )
+        )
+
+    def _rename_item(self, current_name: str) -> None:
+        new_name = ft.TextField(label="Nuevo nombre", value=current_name, autofocus=True)
+
+        def save(_: ft.ControlEvent) -> None:
+            try:
+                target = self.browser.rename(current_name, new_name.value or "")
+                self.page.pop_dialog()
+                self._refresh()
+                self._notify(f"Se renombró como {target.name}.")
+            except (OSError, ValueError) as error:
+                new_name.error_text = str(error)
+                self.page.update()
+
+        self.page.show_dialog(
+            ft.AlertDialog(
+                modal=True,
+                title=ft.Text("Renombrar elemento"),
+                content=new_name,
+                actions=[
+                    ft.TextButton("Cancelar", on_click=lambda _: self.page.pop_dialog()),
+                    ft.TextButton("Guardar", on_click=save),
                 ],
             )
         )

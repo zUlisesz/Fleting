@@ -377,6 +377,7 @@ def main(page: ft.Page):
         page.show_dialog(dialog)
 
     def render_recipe_detail():
+        nonlocal current_recipe_id
         if not current_recipe_id:
             detail_container.content = ft.Container(
                 alignment=ft.Alignment.CENTER,
@@ -406,7 +407,7 @@ def main(page: ft.Page):
 
         recipe = RecipeService.get_recipe_detail(current_recipe_id)
         if not recipe:
-            current_recipe_id_val = None
+            current_recipe_id = None
             render_recipe_detail()
             return
 

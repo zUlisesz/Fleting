@@ -109,9 +109,9 @@ class SudokuGame:
             return MoveResult(False, None, "La partida ya terminó.", game_over=True, won=self.won)
         if not (0 <= row < BOARD_SIZE and 0 <= column < BOARD_SIZE):
             return MoveResult(False, None, "La casilla seleccionada no es válida.")
-        self.selected = (row, column)
         if (row, column) in self.fixed_cells:
             return MoveResult(True, None, "Esta casilla es una pista y no se puede editar.")
+        self.selected = (row, column)
         return MoveResult(True, None, "Casilla seleccionada.")
 
     def place(self, value: int) -> MoveResult:

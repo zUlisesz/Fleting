@@ -4,7 +4,7 @@ from collections.abc import Callable
 
 import flet as ft
 
-from atoms.input import shadcn_input
+from .input import shadcn_input
 
 
 def search_input(

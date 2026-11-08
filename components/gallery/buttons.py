@@ -2,7 +2,7 @@
 
 import flet as ft
 
-from atoms import shadcn_button, shadcn_icon_button, surface
+from ..atoms import shadcn_button, shadcn_icon_button, surface
 
 
 def button_gallery() -> ft.ResponsiveRow:
