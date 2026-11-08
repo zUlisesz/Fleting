@@ -5,6 +5,12 @@ MAX_ATOMIC_NUMBER = 118
 ORBITAL_EXCEPTIONS = {
     24: {"4s": 1, "3d": 5},  # Chromium
     29: {"4s": 1, "3d": 10},  # Copper
+    41: {"5s": 1, "4d": 4},  # Niobium
+    42: {"5s": 1, "4d": 5},  # Molybdenum
+    44: {"5s": 1, "4d": 7},  # Ruthenium
+    45: {"5s": 1, "4d": 8},  # Rhodium
+    46: {"5s": 0, "4d": 10},  # Palladium
+    47: {"5s": 1, "4d": 10},  # Silver
 }
 
 
