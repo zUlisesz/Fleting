@@ -2,7 +2,7 @@
 
 import flet as ft
 
-from theme import COLORS
+from ..theme import COLORS
 
 
 def surface(

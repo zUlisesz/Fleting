@@ -2,9 +2,9 @@
 
 import flet as ft
 
-from atoms import search_input
-from gallery import button_gallery, shimmer_gallery
-from theme import COLORS
+from .atoms import search_input
+from .gallery import button_gallery, shimmer_gallery
+from .theme import COLORS
 
 
 def main(page: ft.Page) -> None:

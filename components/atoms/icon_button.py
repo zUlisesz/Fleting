@@ -4,7 +4,7 @@ from collections.abc import Callable
 
 import flet as ft
 
-from theme import COLORS
+from ..theme import COLORS
 
 
 def shadcn_icon_button(

@@ -4,7 +4,7 @@ from collections.abc import Callable
 
 import flet as ft
 
-from theme import COLORS
+from ..theme import COLORS
 
 
 def _input_border(color: str) -> ft.OutlineInputBorder:
