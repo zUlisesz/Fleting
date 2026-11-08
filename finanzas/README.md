@@ -27,7 +27,7 @@ python3 -m finanzas.app
 
 Se aceptan punto o coma decimal, máximo dos decimales y ningún separador de miles. El máximo por movimiento es 9,999,999.99 MXN. No se redondea silenciosamente una entrada con más decimales. Las barras indican proporción del **total filtrado** y mantienen separadas las categorías de ingresos y gastos; no son presupuestos ni metas. Las entradas se suman al saldo y las salidas se restan. Las bases existentes con tabla `gastos` se migran como movimientos de tipo `Gasto`; la tabla antigua se conserva como respaldo. No se agregan movimientos de ejemplo automáticamente.
 
-La base se crea en `~/.fletDB/finanzas.sqlite3`. Usa `FLET_DATA_DIR` para elegir otro directorio. App para un usuario local, sin conexión bancaria, autenticación, conversión de monedas o sincronización de sesiones. No está preparada como servicio público multiusuario.
+La base se crea en `~/.fletDB/finanzas.sqlite3`. Usa `FLET_DATA_DIR` para elegir otro directorio. Permite crear perfiles locales sin contraseña y separar sus movimientos. Al abrir una base anterior, los movimientos se asignan automáticamente a Ulises. Sin conexión bancaria, autenticación, conversión de monedas ni sincronización de sesiones. No está preparada como servicio público multiusuario.
 
 ## Extensión sugerida
 

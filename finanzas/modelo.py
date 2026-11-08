@@ -77,7 +77,9 @@ class Repositorio:
         self.ruta = Path(ruta)
         self.ruta.parent.mkdir(parents=True, exist_ok=True)
         with self.conexion() as con:
+            con.execute("BEGIN IMMEDIATE")
             self._preparar_esquema(con)
+        self.perfil_id = 1
 
     @contextmanager
     def conexion(self):
@@ -91,6 +93,8 @@ class Repositorio:
     @staticmethod
     def _preparar_esquema(con: sqlite3.Connection):
         tablas = {fila[0] for fila in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        con.execute("CREATE TABLE IF NOT EXISTS perfiles (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL COLLATE NOCASE UNIQUE)")
+        con.execute("INSERT OR IGNORE INTO perfiles(id, nombre) VALUES (1, 'Ulises')")
         con.execute("""CREATE TABLE IF NOT EXISTS movimientos (
             id INTEGER PRIMARY KEY,
             fecha TEXT NOT NULL,
@@ -101,8 +105,31 @@ class Repositorio:
         if "gastos" in tablas and "movimientos" not in tablas:
             con.execute("""INSERT INTO movimientos(id, fecha, concepto, categoria, tipo, centavos)
                 SELECT id, fecha, concepto, categoria, 'Gasto', centavos FROM gastos""")
+        if "perfil_id" not in {fila[1] for fila in con.execute("PRAGMA table_info(movimientos)")}:
+            con.execute("ALTER TABLE movimientos ADD COLUMN perfil_id INTEGER NOT NULL DEFAULT 1 REFERENCES perfiles(id)")
+        con.execute("CREATE INDEX IF NOT EXISTS idx_movimientos_perfil ON movimientos(perfil_id)")
         con.execute("CREATE INDEX IF NOT EXISTS idx_movimientos_fecha ON movimientos(fecha)")
         con.execute("CREATE INDEX IF NOT EXISTS idx_movimientos_tipo ON movimientos(tipo)")
+
+    def perfiles(self):
+        with self.conexion() as con:
+            return con.execute("SELECT id, nombre FROM perfiles ORDER BY nombre COLLATE NOCASE").fetchall()
+
+    def crear_perfil(self, nombre):
+        nombre = nombre.strip()
+        if not 1 <= len(nombre) <= 80:
+            raise ValueError("El nombre debe tener entre 1 y 80 caracteres.")
+        try:
+            with self.conexion() as con:
+                return con.execute("INSERT INTO perfiles(nombre) VALUES (?)", (nombre,)).lastrowid
+        except sqlite3.IntegrityError as error:
+            raise ValueError("Ya existe un perfil con ese nombre.") from error
+
+    def seleccionar_perfil(self, perfil_id):
+        with self.conexion() as con:
+            if not con.execute("SELECT 1 FROM perfiles WHERE id=?", (perfil_id,)).fetchone():
+                raise ValueError("El perfil no existe.")
+        self.perfil_id = perfil_id
 
     def agregar(self, fecha: str, concepto: str, categoria: str, tipo: str, importe: str) -> int:
         try:
@@ -121,8 +148,8 @@ class Repositorio:
         centavos = a_centavos(importe)
         with self.conexion() as con:
             return con.execute(
-                "INSERT INTO movimientos(fecha, concepto, categoria, tipo, centavos) VALUES (?, ?, ?, ?, ?)",
-                (fecha, concepto, categoria, tipo, centavos),
+                "INSERT INTO movimientos(fecha, concepto, categoria, tipo, centavos, perfil_id) VALUES (?, ?, ?, ?, ?, ?)",
+                (fecha, concepto, categoria, tipo, centavos, self.perfil_id),
             ).lastrowid
 
     def listar(self, categoria="Todas", mes="", tipo="Todos") -> list[Movimiento]:
@@ -138,8 +165,8 @@ class Repositorio:
             except ValueError as error:
                 raise ValueError("Mes inválido.") from error
 
-        consulta = "SELECT id, fecha, concepto, categoria, tipo, centavos FROM movimientos WHERE 1=1"
-        parametros = []
+        consulta = "SELECT id, fecha, concepto, categoria, tipo, centavos FROM movimientos WHERE perfil_id=?"
+        parametros = [self.perfil_id]
         if categoria != "Todas":
             consulta += " AND categoria=?"
             parametros.append(categoria)
@@ -156,7 +183,7 @@ class Repositorio:
     def _total_por_tipo(self, tipo: str) -> int:
         with self.conexion() as con:
             fila = con.execute(
-                "SELECT COALESCE(SUM(centavos), 0) FROM movimientos WHERE tipo=?", (tipo,)
+                "SELECT COALESCE(SUM(centavos), 0) FROM movimientos WHERE tipo=? AND perfil_id=?", (tipo, self.perfil_id)
             ).fetchone()
         return int(fila[0])
 
@@ -168,6 +195,6 @@ class Repositorio:
 
     def eliminar(self, id: int):
         with self.conexion() as con:
-            cursor = con.execute("DELETE FROM movimientos WHERE id=?", (id,))
+            cursor = con.execute("DELETE FROM movimientos WHERE id=? AND perfil_id=?", (id, self.perfil_id))
             if cursor.rowcount != 1:
                 raise ValueError("El movimiento ya no existe.")

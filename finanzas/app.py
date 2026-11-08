@@ -20,6 +20,8 @@ def main(page: ft.Page):
         page.add(ft.Text(f"No se pudo abrir el almacenamiento: {error}"))
         return
 
+    perfil = ft.Dropdown(label="Perfil", value="1", options=[ft.DropdownOption(key=str(i), text=n) for i, n in repo.perfiles()])
+    nombre_perfil = ft.TextField(label="Nombre del nuevo perfil", max_length=80)
     concepto = ft.TextField(label="Concepto", max_length=80)
     importe = ft.TextField(
         label="Importe (MXN)",
@@ -151,6 +153,30 @@ def main(page: ft.Page):
             estado.value = f"No se guardó: {error}"
             page.update()
 
+    def cambiar_perfil(e):
+        try:
+            repo.seleccionar_perfil(int(perfil.value))
+            concepto.value = ""
+            importe.value = ""
+            estado.value = "Perfil seleccionado."
+            actualizar()
+        except (ValueError, sqlite3.Error) as error:
+            estado.value = f"No se pudo seleccionar el perfil: {error}"
+            page.update()
+
+    def crear_perfil(e):
+        try:
+            id = repo.crear_perfil(nombre_perfil.value or "")
+            perfil.options = [ft.DropdownOption(key=str(i), text=n) for i, n in repo.perfiles()]
+            perfil.value = str(id)
+            nombre_perfil.value = ""
+            cambiar_perfil(e)
+        except (ValueError, sqlite3.Error) as error:
+            estado.value = f"No se creó el perfil: {error}"
+            page.update()
+
+    perfil.on_change = cambiar_perfil
+
     def cambiar_tema(e):
         page.theme_mode = ft.ThemeMode.DARK if e.control.value else ft.ThemeMode.LIGHT
         page.update()
@@ -191,6 +217,7 @@ def main(page: ft.Page):
             ],
             wrap=True,
         ),
+        ft.Row([perfil, nombre_perfil, ft.Button("Crear perfil", on_click=crear_perfil)], wrap=True),
         ft.Text("Controla entradas y salidas de efectivo · demostración local · MXN"),
         ft.Card(
             content=ft.Container(
@@ -215,7 +242,7 @@ def main(page: ft.Page):
         ft.Text("Movimientos", size=24),
         vacio,
         ft.Row([tabla], scroll=ft.ScrollMode.AUTO),
-        ft.Text("Datos locales de un usuario. No se conecta a cuentas bancarias.", size=12),
+        ft.Text("Perfiles locales sin contraseña. No se conecta a cuentas bancarias.", size=12),
     )
     try:
         actualizar()
