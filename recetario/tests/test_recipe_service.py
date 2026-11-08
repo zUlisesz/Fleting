@@ -98,6 +98,15 @@ class RecipeServiceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             RecipeService.add_step("recipe-1", 1, " ")
 
+    def test_rejects_non_text_values_with_a_validation_error(self):
+        for value in (None, 12, True):
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    RecipeService.create_recipe(value)
+
+        with self.assertRaises(ValueError):
+            RecipeService.register_ingredient("Sal", unit=5)
+
 
 if __name__ == "__main__":
     unittest.main()
