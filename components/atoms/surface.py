@@ -2,7 +2,10 @@
 
 import flet as ft
 
-from ..theme import COLORS
+try:
+    from ..theme import COLORS
+except ImportError:  # Permite importar desde components/main.py.
+    from theme import COLORS
 
 
 def surface(

@@ -4,7 +4,10 @@ from collections.abc import Callable
 
 import flet as ft
 
-from .input import shadcn_input
+try:
+    from .input import shadcn_input
+except ImportError:  # Permite importar desde components/main.py.
+    from atoms.input import shadcn_input
 
 
 def search_input(

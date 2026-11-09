@@ -2,9 +2,14 @@
 
 import flet as ft
 
-from .atoms import search_input
-from .gallery import button_gallery, shimmer_gallery
-from .theme import COLORS
+try:
+    from .atoms import search_input
+    from .gallery import button_gallery, shimmer_gallery
+    from .theme import COLORS
+except ImportError:  # Permite ejecutar: python main.py desde esta carpeta.
+    from atoms import search_input
+    from gallery import button_gallery, shimmer_gallery
+    from theme import COLORS
 
 
 def main(page: ft.Page) -> None:

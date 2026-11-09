@@ -2,7 +2,10 @@
 
 import flet as ft
 
-from ..atoms import shadcn_button, shadcn_icon_button, surface
+try:
+    from ..atoms import shadcn_button, shadcn_icon_button, surface
+except ImportError:  # Permite importar desde components/main.py.
+    from atoms import shadcn_button, shadcn_icon_button, surface
 
 
 def button_gallery() -> ft.ResponsiveRow:
