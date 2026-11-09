@@ -44,4 +44,5 @@ def main(page: ft.Page)-> None:
         )
     )
 
-ft.run(main)
+if __name__ == "__main__":
+    ft.run(main)
