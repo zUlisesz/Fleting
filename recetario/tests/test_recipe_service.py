@@ -36,6 +36,7 @@ class RecipeServiceTests(unittest.TestCase):
     def test_add_ingredient_creates_catalog_entry_and_recipe_link(self):
         with patch.object(IngredientRepository, "getByName", side_effect=[None, None]), \
              patch.object(IngredientRepository, "createIngredient") as create_ingredient, \
+             patch.object(RecipeIngredientRepository, "getIngredientsByRecipe", return_value=[]), \
              patch.object(RecipeIngredientRepository, "addIngredientToRecipe") as attach_ingredient:
             link = RecipeService.add_ingredient_to_recipe(
                 "recipe-1", "Jitomate", amount="2", unit="piezas"
@@ -53,6 +54,7 @@ class RecipeServiceTests(unittest.TestCase):
         existing = {"id": "ingredient-1", "name": "Sal", "unit": "g"}
         with patch.object(IngredientRepository, "getByName", return_value=existing), \
              patch.object(IngredientRepository, "createIngredient") as create_ingredient, \
+             patch.object(RecipeIngredientRepository, "getIngredientsByRecipe", return_value=[]), \
              patch.object(RecipeIngredientRepository, "addIngredientToRecipe") as attach_ingredient:
             link = RecipeService.add_ingredient_to_recipe(
                 "recipe-1", "Sal", amount="5", unit="g"
@@ -62,6 +64,21 @@ class RecipeServiceTests(unittest.TestCase):
         self.assertEqual(link.ingredient_id, "ingredient-1")
         self.assertEqual(link.amount, "5")
         attach_ingredient.assert_called_once_with(link)
+
+    def test_rejects_an_ingredient_already_linked_to_the_recipe(self):
+        existing = {"id": "ingredient-1", "name": "Sal", "unit": "g"}
+        existing_link = {"ingredient_id": "ingredient-1"}
+        with patch.object(IngredientRepository, "getByName", return_value=existing), \
+             patch.object(
+                 RecipeIngredientRepository,
+                 "getIngredientsByRecipe",
+                 return_value=[existing_link],
+             ), \
+             patch.object(RecipeIngredientRepository, "addIngredientToRecipe") as attach_ingredient:
+            with self.assertRaisesRegex(ValueError, "ya está agregado"):
+                RecipeService.add_ingredient_to_recipe("recipe-1", "Sal", amount="5", unit="g")
+
+        attach_ingredient.assert_not_called()
 
     def test_remove_ingredient_link_delegates_to_repository(self):
         with patch.object(

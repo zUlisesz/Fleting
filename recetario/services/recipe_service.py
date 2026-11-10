@@ -96,6 +96,10 @@ class RecipeService:
         else:
             ing_id = ingredient["id"]
 
+        existing_links = RecipeIngredientRepository.getIngredientsByRecipe(recipe_id)
+        if any(link["ingredient_id"] == ing_id for link in existing_links):
+            raise ValueError("El ingrediente ya está agregado a la receta.")
+
         link = RecipeIngredient(
             id=str(uuid.uuid4()),
             recipe_id=recipe_id,
