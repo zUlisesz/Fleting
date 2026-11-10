@@ -111,11 +111,13 @@ class Repositorio:
         con.execute("CREATE INDEX IF NOT EXISTS idx_movimientos_fecha ON movimientos(fecha)")
         con.execute("CREATE INDEX IF NOT EXISTS idx_movimientos_tipo ON movimientos(tipo)")
 
-    def perfiles(self):
+    def perfiles(self) -> list[tuple[int, str]]:
         with self.conexion() as con:
             return con.execute("SELECT id, nombre FROM perfiles ORDER BY nombre COLLATE NOCASE").fetchall()
 
-    def crear_perfil(self, nombre):
+    def crear_perfil(self, nombre: str) -> int:
+        if not isinstance(nombre, str):
+            raise ValueError("El nombre debe ser texto.")
         nombre = nombre.strip()
         if not 1 <= len(nombre) <= 80:
             raise ValueError("El nombre debe tener entre 1 y 80 caracteres.")
@@ -125,7 +127,9 @@ class Repositorio:
         except sqlite3.IntegrityError as error:
             raise ValueError("Ya existe un perfil con ese nombre.") from error
 
-    def seleccionar_perfil(self, perfil_id):
+    def seleccionar_perfil(self, perfil_id: int) -> None:
+        if type(perfil_id) is not int:
+            raise ValueError("El perfil seleccionado no es válido.")
         with self.conexion() as con:
             if not con.execute("SELECT 1 FROM perfiles WHERE id=?", (perfil_id,)).fetchone():
                 raise ValueError("El perfil no existe.")
