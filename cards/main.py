@@ -1,5 +1,9 @@
 import flet as ft
-from model import data 
+
+try:
+    from .model import data
+except ImportError:  # Permite ejecutar: python main.py desde esta carpeta.
+    from model import data
 
 def main(page: ft.Page):
     page.window.alignment = ft.Alignment.CENTER
@@ -56,4 +60,5 @@ def main(page: ft.Page):
         )
     )
 
-ft.run(main, assets_dir="assets")
+if __name__ == "__main__":
+    ft.run(main, assets_dir="assets")
