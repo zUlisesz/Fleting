@@ -68,6 +68,15 @@ class CajeroTests(unittest.TestCase):
                 self.assertEqual(cajero.entregar_dinero(amount), [])
                 self.assertEqual(cajero.dinero, 50_000)
 
+    def test_balance_update_cannot_create_an_invalid_balance(self):
+        cajero = Cajero()
+
+        for amount in (-100, 50_001, 100.0, True):
+            with self.subTest(amount=amount):
+                with self.assertRaises(ValueError):
+                    cajero.actualizar_dinero(amount)
+                self.assertEqual(cajero.dinero, 50_000)
+
 
 if __name__ == "__main__":
     unittest.main()

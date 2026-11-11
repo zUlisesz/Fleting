@@ -5,8 +5,12 @@ class Cajero:
         self.max_monto : int = 6_000
         self.billetes = (50, 100, 200, 500, 1000)
 
-    def actualizar_dinero(self, monto : int) :
-        '''Actualiza el estado de cajero'''
+    def actualizar_dinero(self, monto: int) -> None:
+        """Descuenta un retiro válido sin permitir saldos inconsistentes."""
+        if type(monto) is not int or monto < 0:
+            raise ValueError("El monto a descontar debe ser un entero no negativo.")
+        if monto > self.dinero:
+            raise ValueError("El monto a descontar supera el saldo del cajero.")
         self.dinero -= monto
 
     def autorizar_retiro(self, monto: int ) -> bool:
