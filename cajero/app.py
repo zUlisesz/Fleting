@@ -1,7 +1,11 @@
-from model import Cajero
 import flet_audio as fv
 from typing import Callable
 import flet as ft
+
+try:
+    from .model import Cajero
+except ImportError:  # Permite ejecutar: python app.py desde esta carpeta.
+    from model import Cajero
 
 def main( page : ft.Page):
     page.window.alignment = ft.Alignment.CENTER
@@ -237,4 +241,5 @@ def main( page : ft.Page):
         )
     )
 
-ft.run(main , assets_dir= 'assets')
+if __name__ == "__main__":
+    ft.run(main, assets_dir="assets")
