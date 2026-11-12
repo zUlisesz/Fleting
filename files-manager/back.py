@@ -39,6 +39,8 @@ class Shell:
 
     @staticmethod
     def _safe_name(name: str) -> str:
+        if not isinstance(name, str):
+            raise ValueError("Escribe un nombre válido, sin rutas.")
         clean = name.strip()
         if not clean or clean in {".", ".."} or Path(clean).name != clean:
             raise ValueError("Escribe un nombre válido, sin rutas.")

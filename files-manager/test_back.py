@@ -43,6 +43,19 @@ class ShellTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 shell.rename("tarea.txt", "../fuera.txt")
 
+    def test_rejects_non_text_names_before_accessing_the_filesystem(self):
+        with TemporaryDirectory() as temporary_directory:
+            shell = Shell(temporary_directory)
+
+            for operation, arguments in (
+                (shell.mkdir, (None,)),
+                (shell.rm, (None,)),
+                (shell.rename, (None, "archivo.txt")),
+            ):
+                with self.subTest(operation=operation.__name__):
+                    with self.assertRaises(ValueError):
+                        operation(*arguments)
+
 
 if __name__ == "__main__":
     unittest.main()
