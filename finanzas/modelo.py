@@ -14,6 +14,8 @@ TIPOS_FILTRO = ("Todos", *TIPOS)
 
 def a_centavos(texto: str) -> int:
     """Convierte un importe positivo con hasta dos decimales a centavos."""
+    if not isinstance(texto, str):
+        raise ValueError("El importe debe ser texto.")
     limpio = texto.strip()
     if not re.fullmatch(r"\d+(?:[.,]\d{1,2})?", limpio):
         raise ValueError("Usa un importe positivo con hasta dos decimales, sin separador de miles.")
@@ -142,6 +144,8 @@ class Repositorio:
             raise ValueError("Introduce una fecha real en formato AAAA-MM-DD.") from error
         if fecha_normal != fecha:
             raise ValueError("Usa formato AAAA-MM-DD.")
+        if not isinstance(concepto, str):
+            raise ValueError("El concepto debe ser texto.")
         concepto = concepto.strip()
         if not 1 <= len(concepto) <= 80:
             raise ValueError("El concepto debe tener entre 1 y 80 caracteres.")

@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from finanzas.modelo import Repositorio
+from finanzas.modelo import Repositorio, a_centavos
 
 
 class ProfileRepositoryTests(unittest.TestCase):
@@ -38,6 +38,15 @@ class ProfileRepositoryTests(unittest.TestCase):
             with self.subTest(profile_id=profile_id):
                 with self.assertRaises(ValueError):
                     self.repo.seleccionar_perfil(profile_id)
+
+    def test_rejects_non_text_amounts_and_concepts(self) -> None:
+        for amount in (None, 20, True):
+            with self.subTest(amount=amount):
+                with self.assertRaises(ValueError):
+                    a_centavos(amount)
+
+        with self.assertRaises(ValueError):
+            self.repo.agregar("2026-11-10", None, "Comida", "Gasto", "150")
 
 
 if __name__ == "__main__":
