@@ -119,7 +119,7 @@ class SudokuGame:
             return MoveResult(False, None, "La partida ya terminó.", game_over=True, won=self.won)
         if self.selected is None:
             return MoveResult(False, None, "Selecciona una casilla antes de elegir un número.")
-        if not 1 <= value <= BOARD_SIZE:
+        if type(value) is not int or not 1 <= value <= BOARD_SIZE:
             return MoveResult(False, None, "El valor debe estar entre 1 y 9.")
 
         row, column = self.selected
