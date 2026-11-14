@@ -4,21 +4,24 @@ from faker import Faker
 
 
 AVATAR_COUNT = 6
+AVATARS = tuple(
+    f"/{gender}_{index}.png"
+    for gender in ("woman", "man")
+    for index in range(1, AVATAR_COUNT + 1)
+)
 
 
 def available_avatars(random_source: random.Random | None = None) -> list[str]:
     """Return one shuffled cycle containing every available avatar."""
-    avatars = [
-        f"/{gender}_{index}.png"
-        for gender in ("woman", "man")
-        for index in range(1, AVATAR_COUNT + 1)
-    ]
+    avatars = list(AVATARS)
     (random_source or random).shuffle(avatars)
     return avatars
 
 
 def make_user(avatar: str, generator: Faker) -> dict[str, str]:
     """Create a user whose name matches the gender represented by its avatar."""
+    if avatar not in AVATARS:
+        raise ValueError("El avatar no pertenece al catálogo disponible.")
     if avatar.startswith("/woman_"):
         first_name = generator.first_name_female()
     else:

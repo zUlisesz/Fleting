@@ -1,6 +1,8 @@
 import unittest
 
-from cards.model import AVATAR_COUNT, generate_users
+from faker import Faker
+
+from cards.model import AVATAR_COUNT, generate_users, make_user
 
 
 class GenerateUsersTests(unittest.TestCase):
@@ -23,6 +25,10 @@ class GenerateUsersTests(unittest.TestCase):
     def test_rejects_boolean_counts(self):
         with self.assertRaises(ValueError):
             generate_users(True)
+
+    def test_rejects_an_avatar_outside_the_catalog(self):
+        with self.assertRaises(ValueError):
+            make_user("/unknown.png", Faker("es"))
 
 
 if __name__ == "__main__":
