@@ -31,6 +31,15 @@ class BinaryAdditionTests(unittest.TestCase):
                     "TYPE VALID BINARY NUMBERS",
                 )
 
+    def test_rejects_non_text_values_without_raising(self) -> None:
+        for value in (None, 10, True):
+            with self.subTest(value=value):
+                self.assertFalse(self.module.bin_valid(value))
+                self.assertEqual(
+                    self.module.suma(value, "1"),
+                    "TYPE VALID BINARY NUMBERS",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -9,7 +9,7 @@ def pasar_binario(n: str) -> int:
     return int(n, 2)
 
 def bin_valid(n: str) -> bool:
-    return bool(n) and all(character in "01" for character in n)
+    return isinstance(n, str) and bool(n) and all(character in "01" for character in n)
 
 def main(page: ft.Page)-> None:
     page.title = 'BINARY NUMBERS ADDITION'
