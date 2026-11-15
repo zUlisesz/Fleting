@@ -1,6 +1,8 @@
 """Newton optimization logic independent from the Flet interface."""
 
 from dataclasses import dataclass
+import math
+from numbers import Real
 
 import numpy as np
 import sympy as sp
@@ -34,6 +36,16 @@ def solve_newton(
     max_iterations: int = DEFAULT_MAX_ITERATIONS,
 ) -> NewtonResult:
     """Parse a two-variable function and minimize it using Newton's method."""
+    if (
+        isinstance(tolerance, bool)
+        or not isinstance(tolerance, Real)
+        or not math.isfinite(tolerance)
+        or tolerance <= 0
+    ):
+        raise ValueError("La tolerancia debe ser un número finito mayor que cero.")
+    if type(max_iterations) is not int or max_iterations < 1:
+        raise ValueError("El máximo de iteraciones debe ser un entero mayor que cero.")
+
     expression, variables, point = _parse_problem(expression_text, point_text)
     gradient = [sp.diff(expression, variable) for variable in variables]
     hessian = [[sp.diff(component, variable) for variable in variables] for component in gradient]
