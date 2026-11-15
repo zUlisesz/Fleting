@@ -11,6 +11,8 @@ ORBITAL_EXCEPTIONS = {
     45: {"5s": 1, "4d": 8},  # Rhodium
     46: {"5s": 0, "4d": 10},  # Palladium
     47: {"5s": 1, "4d": 10},  # Silver
+    78: {"6s": 1, "5d": 9},  # Platinum
+    79: {"6s": 1, "5d": 10},  # Gold
 }
 
 

@@ -36,6 +36,13 @@ class ChemistryDataTests(unittest.TestCase):
         self.assertTrue(palladium["configuration"].endswith("5s^0 4d^10"))
         self.assertTrue(silver["configuration"].endswith("5s^1 4d^10"))
 
+    def test_uses_known_exceptions_in_the_six_s_and_five_d_orbitals(self):
+        platinum = calculate_chemistry_data(78)
+        gold = calculate_chemistry_data(79)
+
+        self.assertTrue(platinum["configuration"].endswith("6s^1 4f^14 5d^9"))
+        self.assertTrue(gold["configuration"].endswith("6s^1 4f^14 5d^10"))
+
 
 if __name__ == "__main__":
     unittest.main()
