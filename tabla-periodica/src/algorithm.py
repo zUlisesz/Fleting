@@ -11,6 +11,7 @@ ORBITAL_EXCEPTIONS = {
     45: {"5s": 1, "4d": 8},  # Rhodium
     46: {"5s": 0, "4d": 10},  # Palladium
     47: {"5s": 1, "4d": 10},  # Silver
+    64: {"4f": 7, "5d": 1},  # Gadolinium
     78: {"6s": 1, "5d": 9},  # Platinum
     79: {"6s": 1, "5d": 10},  # Gold
 }
@@ -45,10 +46,19 @@ def calculate_chemistry_data(atomic_number):
     if remaining_electrons:
         return None
 
+    exceptions = ORBITAL_EXCEPTIONS.get(atomic_number, {})
     for orbital in shell_electrons:
-        corrected_electrons = ORBITAL_EXCEPTIONS.get(atomic_number, {}).get(orbital["label"])
+        corrected_electrons = exceptions.get(orbital["label"])
         if corrected_electrons is not None:
             orbital["e"] = corrected_electrons
+
+    existing_labels = {orbital["label"] for orbital in shell_electrons}
+    for n, _l, _cap, label in orbitals_order:
+        if label in exceptions and label not in existing_labels:
+            shell_electrons.append({"n": n, "label": label, "e": exceptions[label]})
+
+    orbital_positions = {label: index for index, (_n, _l, _cap, label) in enumerate(orbitals_order)}
+    shell_electrons.sort(key=lambda orbital: orbital_positions[orbital["label"]])
 
     config_parts = [f"{orbital['label']}^{orbital['e']}" for orbital in shell_electrons]
 

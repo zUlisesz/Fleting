@@ -43,6 +43,11 @@ class ChemistryDataTests(unittest.TestCase):
         self.assertTrue(platinum["configuration"].endswith("6s^1 4f^14 5d^9"))
         self.assertTrue(gold["configuration"].endswith("6s^1 4f^14 5d^10"))
 
+    def test_uses_known_gadolinium_orbital_exception(self):
+        gadolinium = calculate_chemistry_data(64)
+
+        self.assertTrue(gadolinium["configuration"].endswith("6s^2 4f^7 5d^1"))
+
 
 if __name__ == "__main__":
     unittest.main()
