@@ -12,6 +12,8 @@ class Shell:
         self.cwd = self.root
 
     def cd(self, route: str = "..") -> None:
+        if not isinstance(route, str):
+            raise ValueError("La ruta debe ser texto.")
         target = (self.cwd / route).resolve()
         if not target.is_relative_to(self.root):
             raise ValueError("No puedes salir de la carpeta inicial.")

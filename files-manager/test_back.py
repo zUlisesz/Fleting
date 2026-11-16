@@ -56,6 +56,15 @@ class ShellTests(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         operation(*arguments)
 
+    def test_rejects_a_non_text_route_before_navigating(self):
+        with TemporaryDirectory() as temporary_directory:
+            shell = Shell(temporary_directory)
+
+            with self.assertRaises(ValueError):
+                shell.cd(None)
+
+            self.assertEqual(shell.cwd, Path(temporary_directory).resolve())
+
 
 if __name__ == "__main__":
     unittest.main()
