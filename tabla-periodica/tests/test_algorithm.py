@@ -1,11 +1,12 @@
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from algorithm import MAX_ATOMIC_NUMBER, calculate_chemistry_data
+from algorithm import MAX_ATOMIC_NUMBER, ORBITAL_EXCEPTIONS, calculate_chemistry_data
 
 
 class ChemistryDataTests(unittest.TestCase):
@@ -47,6 +48,10 @@ class ChemistryDataTests(unittest.TestCase):
         gadolinium = calculate_chemistry_data(64)
 
         self.assertTrue(gadolinium["configuration"].endswith("6s^2 4f^7 5d^1"))
+
+    def test_rejects_an_exception_that_changes_the_electron_total(self):
+        with patch.dict(ORBITAL_EXCEPTIONS, {24: {"4s": 2, "3d": 5}}):
+            self.assertIsNone(calculate_chemistry_data(24))
 
 
 if __name__ == "__main__":

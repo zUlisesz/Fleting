@@ -60,6 +60,9 @@ def calculate_chemistry_data(atomic_number):
     orbital_positions = {label: index for index, (_n, _l, _cap, label) in enumerate(orbitals_order)}
     shell_electrons.sort(key=lambda orbital: orbital_positions[orbital["label"]])
 
+    if sum(orbital["e"] for orbital in shell_electrons) != atomic_number:
+        return None
+
     config_parts = [f"{orbital['label']}^{orbital['e']}" for orbital in shell_electrons]
 
     valence_electrons = sum(orbital["e"] for orbital in shell_electrons if orbital["n"] == max_n)
