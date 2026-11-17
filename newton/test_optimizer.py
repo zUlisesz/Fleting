@@ -38,6 +38,12 @@ class SolveNewtonTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     solve_newton("x**2 + y**2", "0, 0", max_iterations=max_iterations)
 
+    def test_rejects_non_text_problem_inputs(self):
+        with self.assertRaises(ValueError):
+            solve_newton(None, "0, 0")
+        with self.assertRaises(ValueError):
+            solve_newton("x**2 + y**2", None)
+
 
 if __name__ == "__main__":
     unittest.main()

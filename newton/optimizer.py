@@ -108,6 +108,11 @@ def evaluate_surface(result: NewtonResult, x_values: np.ndarray, y_values: np.nd
 
 
 def _parse_problem(expression_text: str, point_text: str) -> tuple[sp.Expr, tuple[sp.Symbol, sp.Symbol], np.ndarray]:
+    if not isinstance(expression_text, str):
+        raise ValueError("Escribe una función matemática válida.")
+    if not isinstance(point_text, str):
+        raise ValueError("Escribe el punto inicial con el formato x, y.")
+
     try:
         expression = sp.sympify(expression_text)
     except (sp.SympifyError, TypeError, ValueError) as error:
