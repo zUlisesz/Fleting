@@ -124,6 +124,19 @@ class RecipeServiceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             RecipeService.register_ingredient("Sal", unit=5)
 
+    def test_rejects_missing_identifiers_before_accessing_repositories(self):
+        for recipe_id in (None, "   "):
+            with self.subTest(recipe_id=recipe_id):
+                with self.assertRaises(ValueError):
+                    RecipeService.add_step(recipe_id, 1, "Mezclar")
+                with self.assertRaises(ValueError):
+                    RecipeService.add_ingredient_to_recipe(recipe_id, "Sal")
+
+        for instruction_id in (None, " "):
+            with self.subTest(instruction_id=instruction_id):
+                with self.assertRaises(ValueError):
+                    RecipeService.delete_step(instruction_id)
+
 
 if __name__ == "__main__":
     unittest.main()

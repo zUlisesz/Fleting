@@ -37,6 +37,12 @@ def _optional_text(value: Optional[str], maximum_length: int) -> Optional[str]:
     return normalized
 
 
+def _required_identifier(value: str, field_name: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field_name} debe ser un identificador válido.")
+    return value.strip()
+
+
 class RecipeService:
     @staticmethod
     def create_recipe(title: str, recipe_id: Optional[str] = None) -> Recipe:
@@ -52,16 +58,16 @@ class RecipeService:
 
     @staticmethod
     def get_recipe_detail(recipe_id: str) -> Optional[Dict[str, Any]]:
-        return RecipeRepository.getFullRecipe(recipe_id)
+        return RecipeRepository.getFullRecipe(_required_identifier(recipe_id, "La receta"))
 
     @staticmethod
     def delete_recipe(recipe_id: str) -> bool:
-        return RecipeRepository.deleteRecipe(recipe_id)
+        return RecipeRepository.deleteRecipe(_required_identifier(recipe_id, "La receta"))
 
     @staticmethod
     def update_recipe_title(recipe_id: str, new_title: str) -> bool:
         title = _required_text(new_title, "El título", 120)
-        return RecipeRepository.updateRecipe(recipe_id, title)
+        return RecipeRepository.updateRecipe(_required_identifier(recipe_id, "La receta"), title)
 
 
     @staticmethod
@@ -86,6 +92,7 @@ class RecipeService:
         """
         Reuses an existing ingredient by name or creates it if not found, then attaches it to the recipe.
         """
+        recipe_id = _required_identifier(recipe_id, "La receta")
         ingredient_name = _required_text(ingredient_name, "El ingrediente", 120)
         amount = _optional_text(amount, 40)
         unit = _optional_text(unit, 40)
@@ -111,11 +118,14 @@ class RecipeService:
 
     @staticmethod
     def remove_ingredient_from_recipe(recipe_ingredient_id: str) -> bool:
-        return RecipeIngredientRepository.removeIngredientFromRecipe(recipe_ingredient_id)
+        return RecipeIngredientRepository.removeIngredientFromRecipe(
+            _required_identifier(recipe_ingredient_id, "El ingrediente")
+        )
 
 
     @staticmethod
     def add_step(recipe_id: str, step_number: int, instruction_text: str, step_id: Optional[str] = None) -> Instruction:
+        recipe_id = _required_identifier(recipe_id, "La receta")
         if type(step_number) is not int or step_number < 1:
             raise ValueError("El número de paso debe ser un entero mayor que cero.")
         instruction_text = _required_text(instruction_text, "La instrucción", 500)
@@ -130,8 +140,10 @@ class RecipeService:
 
     @staticmethod
     def get_steps_for_recipe(recipe_id: str) -> List[Dict[str, Any]]:
-        return IntructionRepository.readInstructions(recipe_id)
+        return IntructionRepository.readInstructions(_required_identifier(recipe_id, "La receta"))
 
     @staticmethod
     def delete_step(instruction_id: str) -> bool:
-        return IntructionRepository.deleteInstruction(instruction_id)
+        return IntructionRepository.deleteInstruction(
+            _required_identifier(instruction_id, "La instrucción")
+        )
