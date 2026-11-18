@@ -49,6 +49,11 @@ class ChemistryDataTests(unittest.TestCase):
 
         self.assertTrue(gadolinium["configuration"].endswith("6s^2 4f^7 5d^1"))
 
+    def test_uses_known_lanthanum_orbital_exception(self):
+        lanthanum = calculate_chemistry_data(57)
+
+        self.assertTrue(lanthanum["configuration"].endswith("6s^2 4f^0 5d^1"))
+
     def test_rejects_an_exception_that_changes_the_electron_total(self):
         with patch.dict(ORBITAL_EXCEPTIONS, {24: {"4s": 2, "3d": 5}}):
             self.assertIsNone(calculate_chemistry_data(24))
