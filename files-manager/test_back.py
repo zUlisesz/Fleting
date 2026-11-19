@@ -6,6 +6,12 @@ from back import Shell
 
 
 class ShellTests(unittest.TestCase):
+    def test_rejects_an_invalid_initial_directory_value(self):
+        for start_path in (0, True):
+            with self.subTest(start_path=start_path):
+                with self.assertRaises(ValueError):
+                    Shell(start_path)
+
     def test_cannot_navigate_above_the_initial_directory(self):
         with TemporaryDirectory() as temporary_directory:
             shell = Shell(temporary_directory)

@@ -6,7 +6,11 @@ import shutil
 class Shell:
 
     def __init__(self, start_path: str | Path | None = None) -> None:
-        self.root = Path(start_path or Path.home()).expanduser().resolve()
+        source = Path.home() if start_path is None else start_path
+        try:
+            self.root = Path(source).expanduser().resolve()
+        except (TypeError, ValueError) as error:
+            raise ValueError("La carpeta inicial no es válida.") from error
         if not self.root.is_dir():
             raise NotADirectoryError(self.root)
         self.cwd = self.root
