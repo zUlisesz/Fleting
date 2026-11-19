@@ -1,6 +1,6 @@
 import unittest
 
-from sudoku.algoritmo import BOARD_SIZE, EMPTY, SudokuGame
+from sudoku.algoritmo import BOARD_SIZE, EMPTY, SudokuGame, popmatrix
 
 
 def solved_board() -> list[list[int]]:
@@ -44,6 +44,19 @@ class SudokuGameTests(unittest.TestCase):
 
                 self.assertFalse(result.accepted)
                 self.assertEqual(game.board[0][0], EMPTY)
+
+    def test_rejects_non_integer_game_configuration(self):
+        solution = solved_board()
+
+        for max_attempts in (True, 1.0):
+            with self.subTest(max_attempts=max_attempts):
+                with self.assertRaises(ValueError):
+                    SudokuGame.create(max_attempts=max_attempts)
+
+        for blanks_per_row in (False, 2.0, "2"):
+            with self.subTest(blanks_per_row=blanks_per_row):
+                with self.assertRaises(ValueError):
+                    popmatrix(solution, blanks_per_row)
 
 
 if __name__ == "__main__":

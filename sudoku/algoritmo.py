@@ -46,7 +46,7 @@ def fill_matrix() -> list[list[int]]:
 
 
 def popmatrix(solution: list[list[int]], blanks_per_row: int = 5) -> list[list[int]]:
-    if not 0 <= blanks_per_row <= BOARD_SIZE:
+    if type(blanks_per_row) is not int or not 0 <= blanks_per_row <= BOARD_SIZE:
         raise ValueError("La cantidad de casillas vacías debe estar entre 0 y 9.")
 
     board = [row[:] for row in solution]
@@ -88,7 +88,7 @@ class SudokuGame:
 
     @classmethod
     def create(cls, max_attempts: int = 3, blanks_per_row: int = 5) -> "SudokuGame":
-        if max_attempts < 1:
+        if type(max_attempts) is not int or max_attempts < 1:
             raise ValueError("Debe permitirse al menos un intento.")
         solution = fill_matrix()
         board = popmatrix(solution, blanks_per_row)
