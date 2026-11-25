@@ -161,6 +161,7 @@ def main(page: ft.Page):
             estado.value = "Perfil seleccionado."
             actualizar()
         except (ValueError, sqlite3.Error) as error:
+            perfil.value = str(repo.perfil_id)
             estado.value = f"No se pudo seleccionar el perfil: {error}"
             page.update()
 
@@ -175,7 +176,7 @@ def main(page: ft.Page):
             estado.value = f"No se creó el perfil: {error}"
             page.update()
 
-    perfil.on_change = cambiar_perfil
+    perfil.on_select = cambiar_perfil
 
     def cambiar_tema(e):
         page.theme_mode = ft.ThemeMode.DARK if e.control.value else ft.ThemeMode.LIGHT
