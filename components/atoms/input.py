@@ -10,15 +10,6 @@ except ImportError:  # Permite importar desde components/main.py.
     from theme import COLORS
 
 
-def _input_border(color: str) -> ft.OutlineInputBorder:
-    """Construye un borde de entrada para un estado interactivo."""
-
-    return ft.OutlineInputBorder(
-        side=ft.BorderSide(width=1, color=color),
-        border_radius=ft.BorderRadius.all(8),
-    )
-
-
 def shadcn_input(
     label: str,
     *,
@@ -31,7 +22,7 @@ def shadcn_input(
     on_change: Callable[..., None] | None = None,
     width: int | float | None = 320,
 ) -> ft.TextField:
-    """Crea un campo con estados default, hover y focus."""
+    """Crea un campo con estados default y focus."""
 
     return ft.TextField(
         label=label,
@@ -47,14 +38,11 @@ def shadcn_input(
         hint_style=ft.TextStyle(color=COLORS.placeholder),
         cursor_color=COLORS.text,
         content_padding=ft.Padding.symmetric(horizontal=12, vertical=14),
-        border=(
-            {
-                ft.ControlState.DEFAULT: _input_border(COLORS.border),
-                ft.ControlState.HOVERED: _input_border(COLORS.muted),
-                ft.ControlState.FOCUSED: _input_border(COLORS.text),
-            }
-            if outlined
-            else ft.NoInputBorder()
-        ),
+        border=ft.InputBorder.OUTLINE if outlined else ft.InputBorder.NONE,
+        border_width=1,
+        border_radius=ft.BorderRadius.all(8),
+        border_color=COLORS.border,
+        focused_border_width=1,
+        focused_border_color=COLORS.text,
     )
 
