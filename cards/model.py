@@ -1,7 +1,8 @@
+"""Generación de perfiles de usuario falsos"""
 import random
+from typing import TypedDict
 
 from faker import Faker
-
 
 AVATAR_COUNT = 6
 AVATARS = tuple(
@@ -9,6 +10,12 @@ AVATARS = tuple(
     for gender in ("woman", "man")
     for index in range(1, AVATAR_COUNT + 1)
 )
+
+class User(TypedDict):
+    name: str
+    phone: str
+    avatar: str
+    address: str
 
 
 def available_avatars(random_source: random.Random | None = None) -> list[str]:
@@ -18,7 +25,7 @@ def available_avatars(random_source: random.Random | None = None) -> list[str]:
     return avatars
 
 
-def make_user(avatar: str, generator: Faker) -> dict[str, str]:
+def make_user(avatar: str, generator: Faker) -> User:
     """Create a user whose name matches the gender represented by its avatar."""
     if avatar not in AVATARS:
         raise ValueError("El avatar no pertenece al catálogo disponible.")
@@ -34,13 +41,13 @@ def make_user(avatar: str, generator: Faker) -> dict[str, str]:
     }
 
 
-def generate_users(count: int = 5, *, seed: int | None = None) -> list[dict[str, str]]:
+def generate_users(count: int = 5, *, seed: int | None = None) -> list[User]:
     """Generate users with repeatable data when an optional seed is provided."""
     if type(count) is not int or count < 0:
         raise ValueError("El número de usuarios no puede ser negativo.")
 
-    users = []
-    avatars = []
+    users: list[User] = []
+    avatars: list[str] = []
     random_source = random.Random(seed) if seed is not None else None
     generator = Faker("es")
     if seed is not None:
@@ -50,8 +57,3 @@ def generate_users(count: int = 5, *, seed: int | None = None) -> list[dict[str,
             avatars = available_avatars(random_source)
         users.append(make_user(avatars.pop(), generator))
     return users
-
-
-data = generate_users()
-
-

@@ -5,12 +5,12 @@ Visualizador de tarjetas de usuario generado con **Flet** y **Faker**, mostrando
 ## Requisitos
 
 - Python 3.10+
-- `flet`
+- `flet==1.0.3`
 - `faker`
 
-Instalación de dependencias:
+Instalación de dependencias (usa un entorno propio; el `requirements.txt` de la raíz sigue en Flet 0.85.3):
 ```bash
-pip install flet faker
+pip install -r requirements.txt
 ```
 
 ## Ejecución
@@ -18,7 +18,6 @@ pip install flet faker
 Desde el directorio `cards`:
 
 ```bash
-cd cards
 python3 main.py
 ```
 
@@ -30,9 +29,21 @@ flet run main.py
 
 ## Estructura
 
-- `main.py`: Interfaz de usuario construida con Flet (tarjetas, layout responsive y diseño visual).
-- `model.py`: Generación de datos falsos (nombres, teléfonos, direcciones y asignación de avatares).
-- `assets/`: Conjunto de imágenes de avatares masculinos y femeninos (`man_1..6`, `woman_1..6`).
+- `main.py`: interfaz declarativa de Flet 1.0 con componentes y hooks.
+  - `UserCard(user)`: tarjeta de un perfil.
+  - `Toolbar(...)`: slider de cantidad (1–12) y botón para regenerar.
+  - `App()`: componente raíz con el estado.
+- `model.py`: generación de datos falsos (`User`, `generate_users`, `make_user`), sin dependencias de Flet. Ya no se generan datos al importar el módulo.
+- `assets/`: avatares masculinos y femeninos (`man_1..6`, `woman_1..6`).
+
+## Estilo declarativo (Flet 1.0)
+
+La UI se describe como función del estado, en lugar de mutar controles y llamar a `page.update()`:
+
+- `@ft.component` convierte una función en componente reutilizable que se re-renderiza al cambiar su estado o sus argumentos.
+- `ft.use_state` guarda la cantidad de perfiles y un contador de versión; los setters disparan el nuevo render.
+- `ft.use_memo(..., [cantidad, version])` evita regenerar perfiles en renders que no cambian esas dependencias.
+- `page.render(App)` monta el componente raíz; `ft.run(main, assets_dir="assets")` inicia la app.
 
 ## Asignación de avatares
 
