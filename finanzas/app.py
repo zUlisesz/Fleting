@@ -1,256 +1,141 @@
-from datetime import date
-import os
-from pathlib import Path
+"""Componente raíz: estado de la pantalla y coordinación con el repositorio."""
+
+from __future__ import annotations
+
 import sqlite3
+
 import flet as ft
-from .modelo import CATEGORIAS, TIPOS, TIPOS_FILTRO, Repositorio, moneda, moneda_firmada, resumir
+
+from .componentes import (
+    ConfirmarBorrado,
+    Distribucion,
+    Encabezado,
+    FormularioMovimiento,
+    PanelFiltros,
+    PanelResumen,
+    SelectorPerfil,
+    TablaMovimientos,
+)
+from .dominio import Filtros, Movimiento, resumir
+from .repositorio import Repositorio
+
+MENSAJE_INICIAL = "Registra tu primer movimiento. Todos los importes se expresan en MXN."
+ERRORES = (ValueError, sqlite3.Error)
 
 
-def main(page: ft.Page):
-    page.title = "Balance · Flujo de efectivo"
-    page.padding = 24
-    page.scroll = ft.ScrollMode.AUTO
-    page.window.width = 880
-    page.theme = ft.Theme(color_scheme_seed=ft.Colors.TEAL)
-    page.theme_mode = ft.ThemeMode.LIGHT
-    ruta = Path(os.environ.get("FLET_DATA_DIR", str(Path.home() / ".fletBD"))) / "finanzas.sqlite3"
+def cargar(repo: Repositorio, perfil_id: int, filtros: Filtros) -> tuple[list[Movimiento], str | None]:
+    """Movimientos del perfil con los filtros, o ``([], error)`` si falla la base."""
     try:
-        repo = Repositorio(ruta)
-    except (OSError, sqlite3.Error) as error:
-        page.add(ft.Text(f"No se pudo abrir el almacenamiento: {error}"))
-        return
+        return repo.listar(perfil_id, filtros), None
+    except ERRORES as error:
+        return [], str(error)
 
-    perfil = ft.Dropdown(label="Perfil", value="1", options=[ft.DropdownOption(key=str(i), text=n) for i, n in repo.perfiles()])
-    nombre_perfil = ft.TextField(label="Nombre del nuevo perfil", max_length=80)
-    concepto = ft.TextField(label="Concepto", max_length=80)
-    importe = ft.TextField(
-        label="Importe (MXN)",
-        hint_text="Ej. 120.50",
-        helper="Sin separador de miles; máximo dos decimales",
-    )
-    fecha = ft.TextField(label="Fecha (AAAA-MM-DD)", value=date.today().isoformat())
-    categoria = ft.Dropdown(
-        label="Categoría",
-        value="Comida",
-        options=[ft.DropdownOption(key=c, text=c) for c in CATEGORIAS],
-    )
-    tipo = ft.Dropdown(
-        label="Tipo",
-        value="Gasto",
-        options=[ft.DropdownOption(key=c, text=c) for c in TIPOS],
-    )
-    filtro = ft.Dropdown(
-        label="Filtrar categoría",
-        value="Todas",
-        options=[ft.DropdownOption(key=c, text=c) for c in ("Todas", *CATEGORIAS)],
-    )
-    filtro_tipo = ft.Dropdown(
-        label="Filtrar tipo",
-        value="Todos",
-        options=[ft.DropdownOption(key=t, text=t) for t in TIPOS_FILTRO],
-    )
-    mes = ft.TextField(label="Mes (AAAA-MM), vacío = todos", hint_text="2026-09")
-    estado = ft.Text("Registra tu primer movimiento. Todos los importes se expresan en MXN.")
-    resumen = ft.ResponsiveRow()
-    barras = ft.Column(spacing=14)
-    alcance = ft.Text()
-    tabla = ft.DataTable(
-        columns=[ft.DataColumn(ft.Text(t)) for t in ("Fecha", "Concepto", "Categoría", "Tipo", "MXN", "Acción")]
-    )
-    vacio = ft.Text("No hay movimientos para estos filtros.")
-    categoria_activa, mes_activo, tipo_activo = "Todas", "", "Todos"
 
-    def tarjeta(titulo, valor, color=None):
-        return ft.Container(
-            col={"xs": 12, "sm": 6, "md": 3},
-            padding=20,
-            border_radius=14,
-            bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-            content=ft.Column(
-                [ft.Text(titulo), ft.Text(str(valor), size=28, weight=ft.FontWeight.BOLD, color=color)]
-            ),
-        )
+@ft.component
+def App(repo: Repositorio) -> ft.Control:
+    perfil_id, set_perfil_id = ft.use_state(1)
+    revision, set_revision = ft.use_state(0)  # sube al cambiar movimientos
+    revision_perfiles, set_revision_perfiles = ft.use_state(0)
+    filtros, set_filtros = ft.use_state(Filtros())
+    estado, set_estado = ft.use_state(MENSAJE_INICIAL)
+    por_borrar, set_por_borrar = ft.use_state(None)
+    oscuro, set_oscuro = ft.use_state(False)
 
-    def mostrar(movimientos):
-        datos = resumir(movimientos)
-        alcance.value = f"Resultados: {categoria_activa} · {tipo_activo} · {mes_activo or 'todos los meses'}"
-        saldo_color = ft.Colors.GREEN_700 if datos["balance"] >= 0 else ft.Colors.RED_700
-        resumen.controls = [
-            tarjeta("Ingresos · MXN", moneda(datos["ingresos"]), ft.Colors.GREEN_700),
-            tarjeta("Gastos · MXN", moneda(datos["gastos"]), ft.Colors.RED_700),
-            tarjeta("Saldo del filtro · MXN", moneda_firmada(datos["balance"]), saldo_color),
-            tarjeta("Movimientos", datos["cantidad"]),
-        ]
-        tabla.rows = [
-            ft.DataRow(
-                cells=[
-                    ft.DataCell(ft.Text(movimiento.fecha)),
-                    ft.DataCell(ft.Text(movimiento.concepto)),
-                    ft.DataCell(ft.Text(movimiento.categoria)),
-                    ft.DataCell(ft.Text(movimiento.tipo)),
-                    ft.DataCell(
-                        ft.Text(
-                            f"{'+' if movimiento.tipo == 'Ingreso' else '-'}{moneda(movimiento.centavos)}",
-                            color=ft.Colors.GREEN_700
-                            if movimiento.tipo == "Ingreso"
-                            else ft.Colors.RED_700,
-                        )
-                    ),
-                    ft.DataCell(
-                        ft.IconButton(
-                            ft.Icons.DELETE_OUTLINE,
-                            tooltip="Eliminar movimiento",
-                            on_click=lambda e, movimiento=movimiento: confirmar_borrado(movimiento),
-                        )
-                    ),
-                ]
-            )
-            for movimiento in movimientos
-        ]
-        vacio.visible = not bool(movimientos)
-        tabla.visible = bool(movimientos)
-        if datos["total"]:
-            barras.controls = [
-                ft.Column(
-                    [
-                        ft.Text(f"{cat} · {moneda(valor)} · {valor / datos['total']:.1%}"),
-                        ft.ProgressBar(value=valor / datos["total"]),
-                    ]
-                )
-                for cat, valor in sorted(datos["categorias"].items(), key=lambda item: item[1], reverse=True)
-            ]
-        else:
-            barras.controls = [ft.Text("Las proporciones aparecerán al registrar movimientos.")]
+    perfiles = ft.use_memo(repo.perfiles, [repo, revision_perfiles])
+    movimientos, error_carga = ft.use_memo(
+        lambda: cargar(repo, perfil_id, filtros), [repo, perfil_id, filtros, revision]
+    )
+    resumen = ft.use_memo(lambda: resumir(movimientos), [movimientos])
+
+    def actualizar() -> None:
+        set_revision(lambda r: r + 1)
+
+    def cambiar_tema(activo: bool) -> None:
+        set_oscuro(activo)
+        page = ft.context.page
+        page.theme_mode = ft.ThemeMode.DARK if activo else ft.ThemeMode.LIGHT
         page.update()
 
-    def actualizar():
-        mostrar(repo.listar(categoria_activa, mes_activo, tipo_activo))
-
-    def aplicar(e=None):
-        nonlocal categoria_activa, mes_activo, tipo_activo
+    def seleccionar_perfil(nuevo: int) -> None:
         try:
-            mes_nuevo = (mes.value or "").strip()
-            movimientos = repo.listar(filtro.value, mes_nuevo, filtro_tipo.value)
-            categoria_activa, mes_activo, tipo_activo = filtro.value, mes_nuevo, filtro_tipo.value
-            mes.error_text = None
-            estado.value = "Filtros aplicados"
-            mostrar(movimientos)
-        except (ValueError, sqlite3.Error) as error:
-            mes.error_text = str(error)
-            estado.value = "Filtro no aplicado; se conservan los resultados anteriores."
-            page.update()
+            if not repo.existe_perfil(nuevo):
+                raise ValueError("El perfil no existe.")
+        except ERRORES as error:
+            set_estado(f"No se pudo seleccionar el perfil: {error}")
+            return
+        set_perfil_id(nuevo)
+        set_estado("Perfil seleccionado.")
 
-    def guardar(e):
+    def crear_perfil(nombre: str) -> bool:
         try:
-            repo.agregar(
-                fecha.value or "", concepto.value or "", categoria.value, tipo.value, importe.value or ""
-            )
-            concepto.value = ""
-            importe.value = ""
-            estado.value = "Movimiento guardado. Si no aparece, revisa los filtros activos."
-            actualizar()
-        except (ValueError, sqlite3.Error) as error:
-            estado.value = f"No se guardó: {error}"
-            page.update()
+            nuevo = repo.crear_perfil(nombre)
+        except ERRORES as error:
+            set_estado(f"No se creó el perfil: {error}")
+            return False
+        set_revision_perfiles(lambda r: r + 1)
+        set_perfil_id(nuevo)
+        set_estado("Perfil seleccionado.")
+        return True
 
-    def cambiar_perfil(e):
+    def guardar(fecha: str, concepto: str, categoria: str, tipo: str, importe: str) -> bool:
         try:
-            repo.seleccionar_perfil(int(perfil.value))
-            concepto.value = ""
-            importe.value = ""
-            estado.value = "Perfil seleccionado."
-            actualizar()
-        except (ValueError, sqlite3.Error) as error:
-            perfil.value = str(repo.perfil_id)
-            estado.value = f"No se pudo seleccionar el perfil: {error}"
-            page.update()
-
-    def crear_perfil(e):
-        try:
-            id = repo.crear_perfil(nombre_perfil.value or "")
-            perfil.options = [ft.DropdownOption(key=str(i), text=n) for i, n in repo.perfiles()]
-            perfil.value = str(id)
-            nombre_perfil.value = ""
-            cambiar_perfil(e)
-        except (ValueError, sqlite3.Error) as error:
-            estado.value = f"No se creó el perfil: {error}"
-            page.update()
-
-    perfil.on_select = cambiar_perfil
-
-    def cambiar_tema(e):
-        page.theme_mode = ft.ThemeMode.DARK if e.control.value else ft.ThemeMode.LIGHT
-        page.update()
-
-    def confirmar_borrado(movimiento):
-        def borrar(e):
-            page.pop_dialog()
-            try:
-                repo.eliminar(movimiento.id)
-                estado.value = "Movimiento eliminado"
-                actualizar()
-            except (ValueError, sqlite3.Error) as error:
-                estado.value = f"No se eliminó: {error}"
-                page.update()
-
-        page.show_dialog(
-            ft.AlertDialog(
-                modal=True,
-                title=ft.Text("¿Eliminar este movimiento?"),
-                content=ft.Text(f"{movimiento.concepto} · {moneda(movimiento.centavos)}"),
-                actions=[
-                    ft.TextButton("Cancelar", on_click=lambda e: page.pop_dialog()),
-                    ft.TextButton("Eliminar", on_click=borrar),
-                ],
-            )
-        )
-
-    for control in (concepto, importe, fecha, categoria, tipo):
-        control.col = {"xs": 12, "md": 6}
-    page.add(
-        ft.Row(
-            [
-                ft.Icon(ft.Icons.ACCOUNT_BALANCE_WALLET, size=32), 
-                ft.Text("Balance", size=36, weight=ft.FontWeight.BOLD),
-                ft.Container(width= 540), 
-                ft.Switch(thumb_icon= ft.Icons.SUNNY, on_change= cambiar_tema)
-
-            ],
-            wrap=True,
-        ),
-        ft.Row([perfil, nombre_perfil, ft.Button("Crear perfil", on_click=crear_perfil)], wrap=True),
-        ft.Text("Controla entradas y salidas de efectivo · demostración local · MXN"),
-        ft.Card(
-            content=ft.Container(
-                padding=20,
-                content=ft.Column(
-                    [
-                        ft.Text("Nuevo movimiento", size=22),
-                        ft.ResponsiveRow([concepto, importe, fecha, categoria, tipo]),
-                        ft.Button("Registrar movimiento", icon=ft.Icons.ADD, on_click=guardar),
-                    ]
-                ),
-            )
-        ),
-        estado,
-        ft.Divider(),
-        ft.ResponsiveRow([filtro, filtro_tipo, mes]),
-        ft.Button("Aplicar filtros", on_click=aplicar),
-        alcance,
-        resumen,
-        ft.Text("Distribución por categoría", size=24),
-        barras,
-        ft.Text("Movimientos", size=24),
-        vacio,
-        ft.Row([tabla], scroll=ft.ScrollMode.AUTO),
-        ft.Text("Perfiles locales sin contraseña. No se conecta a cuentas bancarias.", size=12),
-    )
-    try:
+            repo.agregar(perfil_id, fecha, concepto, categoria, tipo, importe)
+        except ERRORES as error:
+            set_estado(f"No se guardó: {error}")
+            return False
+        set_estado("Movimiento guardado. Si no aparece, revisa los filtros activos.")
         actualizar()
-    except sqlite3.Error as error:
-        estado.value = f"No se pudieron cargar los datos: {error}"
-        page.update()
+        return True
 
+    def aplicar_filtros(nuevos: Filtros) -> str | None:
+        try:
+            nuevos.validar()
+        except ValueError as error:
+            set_estado("Filtro no aplicado; se conservan los resultados anteriores.")
+            return str(error)
+        set_filtros(nuevos)
+        set_estado("Filtros aplicados")
+        return None
 
-if __name__ == "__main__":
-    ft.run(main)
+    def borrar() -> None:
+        movimiento = por_borrar
+        set_por_borrar(None)
+        try:
+            repo.eliminar(perfil_id, movimiento.id)
+        except ERRORES as error:
+            set_estado(f"No se eliminó: {error}")
+            return
+        set_estado("Movimiento eliminado")
+        actualizar()
+
+    return ft.SafeArea(
+        content=ft.Column(
+            controls=[
+                Encabezado(oscuro=oscuro, on_tema=cambiar_tema),
+                SelectorPerfil(
+                    perfiles, perfil_id, on_seleccionar=seleccionar_perfil, on_crear=crear_perfil
+                ),
+                ft.Text("Controla entradas y salidas de efectivo · demostración local · MXN"),
+                # ``key`` por perfil: al cambiar de perfil el formulario se reinicia.
+                FormularioMovimiento(on_guardar=guardar, key=f"formulario-{perfil_id}"),
+                ft.Text(estado),
+                ft.Divider(),
+                PanelFiltros(filtros, on_aplicar=aplicar_filtros),
+                ft.Text(f"Resultados: {filtros.etiqueta}"),
+                ft.Text(f"No se pudieron cargar los datos: {error_carga}", color=ft.Colors.RED_700,
+                        visible=bool(error_carga)),
+                PanelResumen(resumen),
+                ft.Text("Distribución por categoría", size=24),
+                Distribucion(resumen),
+                ft.Text("Movimientos", size=24),
+                TablaMovimientos(movimientos, on_eliminar=set_por_borrar),
+                ft.Text("Perfiles locales sin contraseña. No se conecta a cuentas bancarias.", size=12),
+                *(
+                    [ConfirmarBorrado(por_borrar, on_confirmar=borrar,
+                                      on_cancelar=lambda: set_por_borrar(None), key="borrar")]
+                    if por_borrar
+                    else []
+                ),
+            ]
+        )
+    )
