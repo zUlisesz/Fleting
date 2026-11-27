@@ -8,7 +8,7 @@ Visualizador de tarjetas de usuario generado con **Flet** y **Faker**, mostrando
 - `flet==1.0.3`
 - `faker`
 
-Instalación de dependencias (usa un entorno propio; el `requirements.txt` de la raíz sigue en Flet 0.85.3):
+Instalación de dependencias (el `requirements.txt` de la raíz solo fija Flet; este añade `faker`):
 ```bash
 pip install -r requirements.txt
 ```

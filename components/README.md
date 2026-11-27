@@ -88,12 +88,4 @@ Cada página del catálogo es un componente en `gallery/` y se registra en `gall
 
 Helpers compartidos: `ResponsiveGrid` y `sample_grid` (`gallery/_layout.py`) y `CatalogBrowser` (`gallery/_catalog.py`), un explorador con búsqueda y paginación para catálogos grandes.
 
-## Pruebas
-
-Desde la carpeta que contiene `components/`:
-
-```bash
-python3 -m unittest discover -s components/tests -t . -v
-```
-
 `tests/render.py` expande un árbol de componentes sin abrir una ventana, útil para probar los tuyos.

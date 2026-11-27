@@ -30,7 +30,7 @@ source .venv/bin/activate
 pip install -r cajero/requirements.txt
 ```
 
-> El `requirements.txt` de la raíz sigue fijado a Flet 0.85.3 para otros proyectos; usa el de `cajero/` en un entorno propio.
+> `cajero` también usa `flet-audio`, que no está en el `requirements.txt` de la raíz; instala el de `cajero/`.
 
 ## Ejecución
 

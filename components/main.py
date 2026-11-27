@@ -3,6 +3,7 @@
 Ejecutar con cualquiera de:
 
     flet run main.py             # desde esta carpeta
+    flet run                     # desde esta 
     python3 main.py              # desde esta carpeta
     python3 -m components.main   # desde la carpeta que contiene `components/`
 """

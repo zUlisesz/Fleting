@@ -20,11 +20,13 @@ materiales y dopaje.
 ## Requisitos
 
 - Python 3.10 o superior.
-- Dependencias declaradas en `requirements.txt` (`flet==0.86.5` y paquetes de
-  ejecución, compilación y pruebas de Flet).
+- Dependencias declaradas en `requirements.txt` (`flet==1.0.3` y los paquetes
+  de ejecución, web y pruebas de Flet, todos en la misma versión).
 
-El repositorio raíz tiene sus propias dependencias y una versión distinta de
-Flet. Instala las de este proyecto antes de ejecutarlo.
+Este proyecto es de **UI imperativa** (ver el
+[README principal](../README.md#declarativo-frente-a-imperativo)) y declara
+más dependencias que el resto, por lo que conviene instalarlas en un entorno
+propio.
 
 ## Instalación
 
@@ -64,7 +66,8 @@ Desde la carpeta del proyecto:
 
 ```bash
 python -m py_compile src/main.py src/algorithm.py
-flet test macos .
+python -m pytest tests/test_algorithm.py   # pruebas unitarias, sin interfaz
+flet test macos .                          # integración (tests/test_main.py)
 ```
 
 La primera ejecución de las pruebas de integración puede descargar los
