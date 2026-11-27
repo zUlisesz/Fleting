@@ -1,4 +1,4 @@
-"""Newton optimization logic independent from the Flet interface."""
+"""Newton optimization logic independent from the interface"""
 
 from dataclasses import dataclass
 import math
