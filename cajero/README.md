@@ -18,7 +18,7 @@ Simulador interactivo de cajero automático (ATM) desarrollado en **Python** uti
 ## Requisitos
 
 - Python 3.10 o superior.
-- `flet==0.85.3` (o la versión indicada en el `requirements.txt` del repositorio).
+- `flet==1.0.3` y `flet-audio==1.0.3` (ver `cajero/requirements.txt`).
 
 ## Instalación
 
@@ -27,8 +27,10 @@ Desde la raíz del repositorio:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r cajero/requirements.txt
 ```
+
+> El `requirements.txt` de la raíz sigue fijado a Flet 0.85.3 para otros proyectos; usa el de `cajero/` en un entorno propio.
 
 ## Ejecución
 
@@ -36,13 +38,13 @@ Desde la carpeta `cajero`:
 
 ```bash
 cd cajero
-python3 app.py
+python3 main.py
 ```
 
 O utilizando el CLI de Flet (con recarga en vivo):
 
 ```bash
-flet run -r app.py
+flet run -r main.py
 ```
 
 ## Recorrido de demostración / Uso
@@ -64,13 +66,23 @@ python3 -m unittest discover -s cajero/tests -t . -v
 
 ## Arquitectura y Lógica
 
-- `model.py`: Módulo de lógica de negocio y reglas del cajero.
-  - Clase `Cajero`: administra el balance (`$50,000`), límite por transacción (`$6,000`) y catálogo de billetes (`[50, 100, 200, 500, 1000]`).
-  - `autorizar_retiro(monto)`: valida que el importe cumpla con las reglas operativas y fondos.
-  - `mensaje_retiro(monto)`: genera el texto de retroalimentación y bandera de estado.
-  - `entregar_dinero(monto)`: construye una entrega exacta de billetes ordenados de forma descendente.
-- `app.py`: Capa de presentación construida con Flet.
-  - Ensambla la estructura del cajero (`maquina`), el display digital (`ventana`), los controles numéricos (`generarControles`), el indicador de `status` y la columna de tarjetas (`billetes`).
+- `model.py`: lógica de negocio, sin dependencias de Flet.
+  - Constantes del dominio (`SALDO_INICIAL`, `MONTO_MINIMO`, `MONTO_MAXIMO`, `MULTIPLO`, `DENOMINACIONES`).
+  - `Cajero` (dataclass): administra el saldo y el límite por transacción.
+  - `autorizar_retiro(monto)` y `mensaje_retiro(monto)` comparten una única validación (`_error_retiro`), por lo que nunca se contradicen.
+  - `entregar_dinero(monto)`: entrega billetes exactos de mayor a menor y descuenta el saldo.
+- `main.py`: interfaz con Flet 1.0.
+  - `CajeroView`: concentra estado, eventos y construcción de la UI (sin variables compartidas por cierre).
+  - `billete_card` y `boton`: constructores de controles reutilizables.
+  - Teclado con `ft.Button`, límite de 5 dígitos y sonidos con `flet_audio.Audio`.
+
+## Migración a Flet 1.0.3
+
+- `Audio` es un `ft.Service`: se registra en `page.services` (ya no en `page.overlay`) y sus métodos (`play()`) son corrutinas.
+- Se usa `ft.run(main, assets_dir="assets")` en lugar de `ft.app`.
+- Alineaciones y bordes con la API vigente: `ft.Alignment.CENTER`, `ft.Border.all`, `ft.Padding.symmetric`.
+- Teclas con `ft.Button` + `ft.ButtonStyle` (accesibles) en lugar de `ft.Container` con `on_click`.
+- El punto de entrada pasó de `app.py` a `main.py`.
 
 ## Referencias
 
