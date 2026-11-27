@@ -1,53 +1,61 @@
-"""Botones atómicos con apariencia inspirada en shadcn/ui."""
+"""Botón con texto, inspirado en shadcn/ui."""
 
 from collections.abc import Callable
+from typing import Literal
 
 import flet as ft
 
-try:
-    from ..theme import COLORS
-except ImportError:  # Permite importar desde components/main.py.
-    from theme import COLORS
+from ..theme import COLORS
+
+Variant = Literal["default", "outline"]
+VARIANTS: tuple[Variant, ...] = ("default", "outline")
 
 
-def shadcn_button(
-    label: str,
-    *,
-    on_click: Callable[..., None] | None = None,
-    variant: str = "default",
-    icon: ft.IconData | None = None,
-    disabled: bool = False,
-) -> ft.Control:
-    """Crea un botón ``default`` u ``outline`` reutilizable."""
+def button_style(variant: Variant) -> ft.ButtonStyle:
+    """Estilo (colores por estado, forma y relleno) de cada variante."""
+    if variant not in VARIANTS:
+        raise ValueError(f"variant debe ser uno de {VARIANTS}, no {variant!r}")
 
-    if variant not in {"default", "outline"}:
-        raise ValueError("variant debe ser 'default' o 'outline'")
-
-    is_default = variant == "default"
-    style = ft.ButtonStyle(
+    filled = variant == "default"
+    text = COLORS.surface if filled else COLORS.text
+    state = ft.ControlState
+    return ft.ButtonStyle(
         color={
-            ft.ControlState.DEFAULT: COLORS.surface if is_default else COLORS.text,
-            ft.ControlState.HOVERED: COLORS.surface if is_default else COLORS.text,
-            ft.ControlState.DISABLED: COLORS.placeholder,
+            state.DEFAULT: text,
+            state.HOVERED: text,
+            state.DISABLED: COLORS.placeholder,
         },
         bgcolor={
-            ft.ControlState.DEFAULT: COLORS.accent if is_default else COLORS.surface,
-            ft.ControlState.HOVERED: COLORS.accent_hover if is_default else COLORS.background,
-            ft.ControlState.DISABLED: COLORS.border,
+            state.DEFAULT: COLORS.accent if filled else COLORS.surface,
+            state.HOVERED: COLORS.accent_hover if filled else COLORS.background,
+            state.DISABLED: COLORS.border,
         },
-        side=ft.BorderSide(width=1, color=COLORS.border) if not is_default else None,
+        side=None if filled else ft.BorderSide(width=1, color=COLORS.border),
         shape=ft.RoundedRectangleBorder(radius=8),
         padding=ft.Padding.symmetric(horizontal=16, vertical=10),
         elevation=0,
         animation_duration=120,
     )
 
-    button_class = ft.FilledButton if is_default else ft.OutlinedButton
-    return button_class(
+
+@ft.component
+def Button(
+    label: str,
+    *,
+    on_click: Callable[..., None] | None = None,
+    variant: Variant = "default",
+    icon: ft.IconData | None = None,
+    disabled: bool = False,
+) -> ft.Control:
+    """Botón ``default`` (relleno) u ``outline`` (contorno).
+
+    >>> Button("Guardar", icon=ft.Icons.SAVE, on_click=lambda _: guardar())
+    """
+    control = ft.FilledButton if variant == "default" else ft.OutlinedButton
+    return control(
         content=label,
         icon=icon,
-        style=style,
+        style=button_style(variant),
         on_click=on_click,
         disabled=disabled,
     )
-

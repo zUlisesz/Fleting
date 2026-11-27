@@ -1,31 +1,34 @@
-"""Campos de texto atómicos con apariencia inspirada en shadcn/ui."""
+"""Campo de texto con estados default y focus."""
 
 from collections.abc import Callable
 
 import flet as ft
 
-try:
-    from ..theme import COLORS
-except ImportError:  # Permite importar desde components/main.py.
-    from theme import COLORS
+from ..theme import COLORS
 
 
-def shadcn_input(
-    label: str,
+@ft.component
+def TextInput(
+    label: str = "",
     *,
-    hint_text: str | None = None,
     value: str = "",
+    hint_text: str | None = None,
     password: bool = False,
     can_reveal_password: bool = False,
     outlined: bool = True,
     prefix_icon: ft.IconData | None = None,
     on_change: Callable[..., None] | None = None,
     width: int | float | None = 320,
-) -> ft.TextField:
-    """Crea un campo con estados default y focus."""
+) -> ft.Control:
+    """Campo de texto controlado: el valor mostrado es siempre ``value``.
 
+    Guarda el texto con ``ft.use_state`` en el componente que lo usa:
+
+    >>> text, set_text = ft.use_state("")
+    >>> TextInput("Nombre", value=text, on_change=lambda e: set_text(e.control.value))
+    """
     return ft.TextField(
-        label=label,
+        label=label or None,
         hint_text=hint_text,
         value=value,
         password=password,
@@ -38,11 +41,10 @@ def shadcn_input(
         hint_style=ft.TextStyle(color=COLORS.placeholder),
         cursor_color=COLORS.text,
         content_padding=ft.Padding.symmetric(horizontal=12, vertical=14),
-        border=ft.InputBorder.OUTLINE if outlined else ft.InputBorder.NONE,
+        border=ft.OutlineInputBorder() if outlined else ft.NoInputBorder(),
         border_width=1,
-        border_radius=ft.BorderRadius.all(8),
+        border_radius=8,
         border_color=COLORS.border,
         focused_border_width=1,
         focused_border_color=COLORS.text,
     )
-

@@ -1,14 +1,12 @@
-"""Container estilizado mínimo para agrupar componentes reutilizables."""
+"""Superficie con borde y esquinas redondeadas para agrupar contenido."""
 
 import flet as ft
 
-try:
-    from ..theme import COLORS
-except ImportError:  # Permite importar desde components/main.py.
-    from theme import COLORS
+from ..theme import COLORS
 
 
-def surface(
+@ft.component
+def Surface(
     content: ft.Control,
     *,
     padding: int | float = 24,
@@ -16,9 +14,8 @@ def surface(
     bgcolor: str | None = None,
     width: int | float | None = None,
     height: int | float | None = None,
-) -> ft.Container:
-    """Crea una superficie oscura consistente para galerías y demos."""
-
+) -> ft.Control:
+    """Agrupa ``content`` sobre un fondo con borde fino."""
     return ft.Container(
         width=width,
         height=height,

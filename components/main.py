@@ -1,75 +1,31 @@
-"""Demo mínima con botones, búsqueda y shimmer."""
+"""Punto de entrada del catálogo de componentes.
+
+Ejecutar con cualquiera de:
+
+    flet run main.py             # desde esta carpeta
+    python3 main.py              # desde esta carpeta
+    python3 -m components.main   # desde la carpeta que contiene `components/`
+"""
+
+import sys
+from pathlib import Path
 
 import flet as ft
 
-try:
-    from .atoms import search_input
-    from .gallery import button_gallery, shimmer_gallery
-    from .theme import COLORS
-except ImportError:  # Permite ejecutar: python main.py desde esta carpeta.
-    from atoms import search_input
-    from gallery import button_gallery, shimmer_gallery
-    from theme import COLORS
+if not __package__:  # Ejecutado como script: hace importable `components`.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from components.app import App  # noqa: E402
+from components.theme import COLORS  # noqa: E402
 
 
 def main(page: ft.Page) -> None:
-    """Presenta únicamente los componentes activos del catálogo."""
-
-    page.title = "Flet Elementals · Buttons and Search"
-    page.bgcolor = "#0A0A0A"
-    page.padding = 0
+    page.title = "Flet Components"
+    page.theme_mode = ft.ThemeMode.LIGHT
     page.theme = ft.Theme(color_scheme_seed=COLORS.accent)
-    page.scroll = ft.ScrollMode.AUTO
-
-    search = search_input(hint_text="Search components", width=420)
-    result = ft.Text("", color="#E1E1EA", size=14)
-
-    def search_change(_: ft.ControlEvent) -> None:
-        query = search.value.strip()
-        result.value = f"Searching for: {query}" if query else ""
-        result.update()
-
-    search.on_change = search_change
-
-    page.add(
-        ft.Container(
-            padding=ft.Padding.symmetric(horizontal=32, vertical=28),
-            content=ft.Column(
-                controls=[
-                    ft.Text(
-                        "Flet Elementals",
-                        color=COLORS.surface,
-                        size=32,
-                        weight=ft.FontWeight.W_700,
-                    ),
-                    ft.Text(
-                        "Buttons, search input y shimmer reutilizables.",
-                        color="#A1A1AA",
-                        size=16,
-                    ),
-                    ft.Divider(color=COLORS.border, thickness=1),
-                    ft.Container(
-                        padding=24,
-                        border=ft.Border.all(1, COLORS.border),
-                        border_radius=16,
-                        content=ft.Column(
-                            controls=[
-                                ft.Text("Search input", color=COLORS.surface, size=20),
-                                search,
-                                result,
-                            ],
-                            spacing=12,
-                        ),
-                    ),
-                    ft.Text("Button gallery", color=COLORS.surface, size=22, weight=ft.FontWeight.W_600),
-                    button_gallery(),
-                    ft.Text("Shimmer gallery", color=COLORS.surface, size=22, weight=ft.FontWeight.W_600),
-                    shimmer_gallery(),
-                ],
-                spacing=24,
-            ),
-        )
-    )
+    page.bgcolor = COLORS.background
+    page.padding = 0
+    page.render(App)
 
 
 if __name__ == "__main__":

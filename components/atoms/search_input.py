@@ -1,28 +1,24 @@
-"""Search input atómico con icono de búsqueda."""
+"""Campo de búsqueda: un ``TextInput`` con icono de lupa."""
 
 from collections.abc import Callable
 
 import flet as ft
 
-try:
-    from .input import shadcn_input
-except ImportError:  # Permite importar desde components/main.py.
-    from atoms.input import shadcn_input
+from .text_input import TextInput
 
 
-def search_input(
+@ft.component
+def SearchInput(
     *,
-    hint_text: str = "Search",
     value: str = "",
+    hint_text: str = "Search",
     on_change: Callable[..., None] | None = None,
     width: int | float = 360,
-) -> ft.TextField:
-    """Crea un campo de búsqueda reutilizable con icono integrado."""
-
-    return shadcn_input(
-        "",
-        hint_text=hint_text,
+) -> ft.Control:
+    """Campo de búsqueda controlado (igual que ``TextInput``)."""
+    return TextInput(
         value=value,
+        hint_text=hint_text,
         prefix_icon=ft.Icons.SEARCH,
         on_change=on_change,
         width=width,

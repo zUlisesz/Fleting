@@ -1,4 +1,4 @@
-"""Tokens visuales compartidos por los componentes del ejemplo."""
+"""Tokens visuales compartidos por los componentes."""
 
 from dataclasses import dataclass
 
@@ -19,4 +19,3 @@ class Palette:
 
 
 COLORS = Palette()
-

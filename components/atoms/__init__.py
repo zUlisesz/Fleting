@@ -1,10 +1,13 @@
-"""Componentes atómicos reutilizables."""
+"""Componentes atómicos reutilizables.
 
-from .button import shadcn_button
-from .icon_button import shadcn_icon_button
-from .input import shadcn_input
-from .search_input import search_input
-from .surface import surface
+Todos son componentes declarativos (``@ft.component``): se usan dentro de
+otro componente y se montan con ``page.render(...)``.
+"""
 
-__all__ = ["search_input", "shadcn_button", "shadcn_icon_button", "shadcn_input", "surface"]
+from .button import Button
+from .icon_button import IconButton
+from .search_input import SearchInput
+from .surface import Surface
+from .text_input import TextInput
 
+__all__ = ["Button", "IconButton", "SearchInput", "Surface", "TextInput"]
